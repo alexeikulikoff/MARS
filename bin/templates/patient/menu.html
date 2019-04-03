@@ -1,0 +1,44 @@
+<!--  PATIENT MENU  -->
+<menu-page th:fragment="menu">
+<nav class="navbar-default navbar-static-side" role="navigation">
+	<div class="sidebar-collapse">
+		<ul class="nav metismenu" id="side-menu">
+			<li class="nav-header">
+				<div class="dropdown profile-element text-center">
+					<span> <img id="topProfImg" width="50" height="50"
+						class="img-circle"
+						th:src="${image}? @{'data:image/jpeg;base64,'+${image}} : @{img/mibs-empty-profile.jpg}" />
+					</span> <a data-toggle="dropdown" class="dropdown-toggle" href="#"> <span
+						class="clear"> <span class="block m-t-xs"> <strong
+								class="font-bold"><span
+									th:text="${surname} + ' ' + ${firstname} + ' ' + ${lastname}"> David
+										Williams</span></strong>
+						</span> <span class="text-muted text-xs block"><span
+								th:text="#{label.cabinet}">Art Director</span> </span>
+					</span>
+					</a>
+					
+				</div>
+				<div class="logo-element">IN+</div>
+			</li>
+			
+			<li><a href="profile"><i class="fa fa-address-card-o"></i> <span
+					class="nav-label" th:text="#{label.userProfile}">Profile</span></a></li>
+			<li><a href="explorations"><i class="fa fa-stethoscope"></i>
+					<span class="nav-label" th:text="#{label.explorations}">Explorations</span></a></li>
+			<li><a href="contacts"><i class="fa fa-user-md"></i>
+					<span class="nav-label" th:text="#{label.contacts}">Contacts</span></a></li>
+					
+			<li><a href="invitations"><i class="fa fa-medkit"></i>
+					<span class="nav-label" th:text="#{label.invitations}">Invitations</span></a></li>		
+					
+			<li><a href="help"><i class="fa fa-question"></i>
+					<span class="nav-label" th:text="#{label.help}">Help</span></a></li>
+					
+			
+
+		</ul>
+
+	</div>
+</nav>
+</menu-page>

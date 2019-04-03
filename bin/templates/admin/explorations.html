@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html>
+
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title th:text="#{label.exploration}">INSPINIA | Profile</title>
+<link href="css/bootstrap.min.css" rel="stylesheet"
+	data-th-href="@{css/bootstrap.min.css}" />
+<link href="font-awesome/css/font-awesome.css" rel="stylesheet"
+	data-th-href="@{font-awesome/css/font-awesome.css}" />
+
+<link href="css/plugins/slick/slick.css" rel="stylesheet"
+	data-th-href="@{css/plugins/slick/slick.css}" />
+<link href="css/plugins/slick/slick-theme.css" rel="stylesheet"
+	data-th-href="@{css/plugins/slick/slick-theme.css}" />
+
+<!-- Toastr style -->
+<link href="css/plugins/toastr/toastr.min.css" rel="stylesheet"
+	data-th-href="@{css/plugins/toastr/toastr.min.css}" />
+
+<link href="css/animate.css" rel="stylesheet"
+	data-th-href="@{css/animate.css}" />
+
+<link href="css/plugins/dropzone/basic.css" rel="stylesheet"
+	data-th-href="@{css/plugins/dropzone/basic.css}" />
+<link href="css/plugins/dropzone/dropzone.css" rel="stylesheet"
+	data-th-href="@{css/plugins/dropzone/dropzone.css}" />
+<link href="css/plugins/jasny/jasny-bootstrap.min.css" rel="stylesheet"
+	data-th-href="@{css/plugins/jasny/jasny-bootstrap.min.css}" />
+<link href="css/plugins/codemirror/codemirror.css" rel="stylesheet"
+	data-th-href="@{css/plugins/codemirror/codemirror.css}" />
+<link href="css/datatables.min.css" rel="stylesheet"
+	data-th-href="@{css/datatables.min.css}" />
+
+<link href="css/style.css" rel="stylesheet"
+	data-th-href="@{css/style.css}" />
+<link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon"
+	data-th-href="@{img/favicon.ico}" />
+
+<body id="body">
+	<div id="wait_dialog" class="alert alert-success wait-dialog hidden"
+		role="alert">
+		<!-- 	<img class="image-rotate" src="src/img/rotate.gif" width="50" height="50"  />   -->
+		<div class="sk-spinner sk-spinner-cube-grid">
+			<div class="sk-cube"></div>
+			<div class="sk-cube"></div>
+			<div class="sk-cube"></div>
+			<div class="sk-cube"></div>
+			<div class="sk-cube"></div>
+			<div class="sk-cube"></div>
+			<div class="sk-cube"></div>
+			<div class="sk-cube"></div>
+			<div class="sk-cube"></div>
+		</div>
+		<div class="text-center">
+			<span th:text="#{message.pleaseWait}">Please wait</span>
+		</div>
+	</div>
+	<div id="loadExploration_dialog" class="alert alert-success wait-dialog hidden"
+		role="alert">
+		<!-- 	<img class="image-rotate" src="src/img/rotate.gif" width="50" height="50"  />   -->
+		<div class="sk-spinner sk-spinner-cube-grid">
+			<div class="sk-cube"></div>
+			<div class="sk-cube"></div>
+			<div class="sk-cube"></div>
+			<div class="sk-cube"></div>
+			<div class="sk-cube"></div>
+			<div class="sk-cube"></div>
+			<div class="sk-cube"></div>
+			<div class="sk-cube"></div>
+			<div class="sk-cube"></div>
+		</div>
+		<div class="text-center">
+			<span>Please wait. Load exploration...</span>
+		</div>
+	</div>
+	<div id="wrapper">
+		<div th:replace="admin/menu :: menu"></div>
+		<div id="page-wrapper" class="gray-bg">
+			<div class="row border-bottom">
+				<div th:replace="fragments/hdnav :: hdnav"></div>
+			</div>
+			<div class="row wrapper border-bottom white-bg page-heading">
+				<div class="col-lg-10">
+					<h2 th:text="${pageHeader}">Patients</h2>
+					<ol class="breadcrumb">
+						<li><a href="index">Home</a></li>
+						<li th:text="#{label.users}"><a href="#">Home</a></li>
+						<li th:text="${pageHeader}"><a>Extra Pages</a></li>
+					</ol>
+				</div>
+				<div class="col-lg-2"></div>
+			</div>
+			<div class="wrapper wrapper-content">
+				<div class="row">
+					<div class="col-md-5">
+
+						<div class="ibox float-e-margins">
+							<div class="ibox-title">
+								<h5 th:text="${patients}">Пациенты</h5>
+								<div class="ibox-tools">
+									<a class="collapse-link"> <i class="fa fa-chevron-up"></i></a> 
+									<a class="dropdown-toggle" data-toggle="dropdown" href="#"></a>
+								</div>
+							</div>
+
+							<div class="ibox-content">
+								<table th:id="${tableId}" class="table"></table>
+
+							</div>
+						</div>
+					</div>
+					<div class="col-md-7">
+						<div id="nExpId" class="ibox float-e-margins hidden">
+
+							<div class="ibox-title">
+								<h5  th:text="#{label.newEplorations}">New</h5>
+								<div class="ibox-tools">
+									<a class="collapse-link"> <i class="fa fa-chevron-up"></i>
+									</a> <a onclick="explorations.hideNExp()"> <i
+										class="fa fa-times"></i>
+									</a>
+								</div>
+							</div>
+							<div class="ibox-content">
+								<div class="row">
+									<ul class="list-group">
+										<li class="list-group-item">
+										<strong>Пациент:</strong>
+										<span id="nExTitleID"> Федорова Елена Петровна</span></li>
+									</ul>
+
+								</div>
+								<div class="row">
+									<div class="tabs-container">
+										<ul class="nav nav-tabs">
+											<li class="active"><a data-toggle="tab" href="#tab-1"
+												th:text="#{label.zip}">ZIP</a></li>
+											<li class=""><a data-toggle="tab" href="#tab-2"
+												th:text="#{label.network}">This is second tab</a></li>
+										</ul>
+										<div class="tab-content">
+											<div id="tab-1" class="tab-pane active">
+												<div class="panel-body">
+													<form id="formSaveExploration" role="form"
+														class="form-horizontal">
+														<div class="form-group">
+															<div class="row" style="margin-left: -5px">
+																<div class="col-sm-10">
+																	<input type="text" th:placeholder="#{label.explrName}"
+																		id="explorationNameID" class="form-control" />
+																</div>
+															</div>
+															<div class="row" style="margin-left: -5px">
+																<div class="col-sm-8">
+																	<div class="input-group">
+																		<input type="text"
+																			th:placeholder="#{label.dicomArchive}"
+																			id="uploadDicomNameID" class="form-control" /> <span
+																			class="input-group-btn"> <label
+																			for="uploadDicom" type="button" id="BtnUploadDicom"
+																			class="btn btn-primary"> <i
+																				class="fa fa-folder-open"></i>
+																		</label> <input type="file" accept=".zip" id="uploadDicom"
+																			class="form-control" style="display: none"
+																			oninput="explorations.uploadDicom(this.value)" />
+
+																		</span>
+																	</div>
+																</div>
+																<div class="col-sm-2">
+																	
+																	<button id="btnSaveExpl" class="btn btn-primary"
+																		onclick="explorations.saveExploration()">
+																		<i class="fa fa-save"></i><span
+																			style="padding-left: 5px;" th:text="#{button.upload}">Save</span>
+																	</button>
+																</div>
+															</div>
+														</div>
+													</form>
+												</div>
+											</div>
+
+											<div id="tab-2" class="tab-pane">
+												<div class="panel-body">
+													<form role="form" class="form-horizontal">
+														<div class="form-group">
+															<div class="row" style="margin-left: -5px">
+																<div class="col-sm-10">
+																	<input type="text" th:placeholder="#{label.explrName}"
+																		id="exNameID_tab2" class="form-control" />
+																</div>
+															</div>
+															<div class="row" style="margin-left: -5px">
+																<div class="col-sm-10">
+																	<input type="text"
+																		th:placeholder="#{label.networkExample}"
+																		id="exNetPath" class="form-control" />
+
+																</div>
+															</div>
+															<div class="row" style="margin-left: -5px">
+																<div class="col-sm-3">
+																	<input type="text"
+																		th:placeholder="#{placeholder.username}" id="exUserID"
+																		class="form-control" />
+
+																</div>
+																<div class="col-sm-3">
+																	<input type="text"
+																		th:placeholder="#{placeholder.password}"
+																		id="exPasswdID" class="form-control" />
+
+																</div>
+																<div class="col-sm-2">
+																	<button id="btnSaveExpl" class="btn btn-primary"
+																		onclick="explorations.saveExplorationViaNetwork()">
+																		<i class="fa fa-save"></i><span
+																			style="padding-left: 5px;" th:text="#{button.upload}">Save</span>
+																	</button>
+
+																</div>
+															</div>
+														</div>
+													</form>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+
+						</div>
+						<div class="ibox float-e-margins">
+
+							<div class="ibox-title">
+								<h5 th:text="#{label.explorations}">Exploration</h5>
+								<div class="ibox-tools">
+									<a class="collapse-link"> <i class="fa fa-chevron-up"></i>
+									</a>
+								</div>
+							</div>
+
+							<div id="admin-exDetails" class="ibox-content hidden">
+								<div class="row">
+									<ul class="list-group">
+										<li class="list-group-item"><span class="badge badge-primary" id="admin-exDetailsNum">16</span>
+											<span class="badge" th:text="#{label.savedExploration}">Сохранено исследований:</span>
+											<strong>Пациент:
+										</strong><span id="admin-exDetailsPatient"> Федорова Елена Петровна</span></li>
+									</ul>
+								</div>
+								<div id="admin-ExplTableContainer" class="row">
+									<table id="admin-explorationTable" class="table"></table>
+								</div>
+
+							</div>
+
+						</div>
+
+					</div>
+				</div>
+			</div>
+			<div th:replace="fragments/footer :: footer"></div>
+		</div>
+	</div>
+   
+   <div th:replace="fragments/modal/modalViewer :: modalViewer"></div>
+   <div th:replace="fragments/modal/showLineInfo :: showLineInfo"></div>
+   
+	
+	<!-- Mainly scripts -->
+	<script src="js/jquery-3.1.1.min.js"
+		data-th-src="@{js/jquery-3.1.1.min.js}"></script>
+	<script src="js/bootstrap.min.js" data-th-src="@{js/bootstrap.min.js}"></script>
+	<script src="js/plugins/metisMenu/jquery.metisMenu.js"
+		data-th-src="@{js/plugins/metisMenu/jquery.metisMenu.js}"></script>
+	<script src="js/plugins/slimscroll/jquery.slimscroll.min.js"
+		data-th-src="@{js/plugins/slimscroll/jquery.slimscroll.min.js}"></script>
+
+	<!-- Custom and plugin javascript -->
+	<script src="js/inspinia.js" data-th-src="@{js/inspinia.js}"></script>
+	<script src="js/plugins/pace/pace.min.js"
+		data-th-src="@{js/plugins/pace/pace.min.js}"></script>
+
+	<!-- Peity -->
+	<script src="js/plugins/peity/jquery.peity.min.js"
+		data-th-src="@{js/plugins/peity/jquery.peity.min.js}"></script>
+	<script src="js/demo/peity-demo.js"
+		data-th-src="@{js/demo/peity-demo.js}"></script>
+
+	<!-- Jasny -->
+	<script src="js/plugins/jasny/jasny-bootstrap.min.js"
+		data-th-src="@{js/plugins/jasny/jasny-bootstrap.min.js}"></script>
+
+	<!-- DROPZONE -->
+	<script src="js/plugins/dropzone/dropzone.js"
+		data-th-src="@{js/plugins/dropzone/dropzone.js}"></script>
+
+	<!-- CodeMirror -->
+	<script src="js/plugins/codemirror/codemirror.js"
+		data-th-src="@{js/plugins/codemirror/codemirror.js}"></script>
+	<script src="js/plugins/codemirror/mode/xml/xml.js"
+		data-th-src="@{js/plugins/codemirror/mode/xml/xml.js}"></script>
+
+
+	<script src="js/knockout/knockout.js"
+		data-th-src="@{js/knockout/knockout.js}"></script>
+	<!-- Toastr -->
+	<script src="js/plugins/toastr/toastr.min.js"
+		data-th-src="@{js/plugins/toastr/toastr.min.js}"></script>
+
+	<script src="js/datatables.min.js"
+		data-th-src="@{js/datatables.min.js}"></script>
+	<script src="js/plugins/validate/jquery.validate.min.js"
+		data-th-src="@{js/plugins/validate/jquery.validate.min.js}"></script>
+	<script src="js/plugins/validate/additional-methods.min.js"
+		data-th-src="@{js/plugins/validate/additional-methods.min.js}"></script>
+	<script src="js/plugins/validate/localization/messages_ru.min.js"
+		data-th-src="@{js/plugins/validate/localization/messages_ru.min.js}"></script>
+
+	<!-- slick carousel-->
+	<script src="js/plugins/slick/slick.min.js"
+		data-th-src="@{js/plugins/slick/slick.min.js}"></script>
+
+	<script src="js/core.js" data-th-src="@{js/core.js}"></script>
+	<script src="js/plugins/d3/d3.min.js"
+		data-th-src="@{js/plugins/d3/d3.min.js}"></script>
+	<script src="js/plugins/jquery-mouseweel/jquery.mousewheel.min.js"
+		data-th-src="@{js/plugins/jquery-mouseweel/jquery.mousewheel.min.js}"></script>
+	<script src="js/explorations.js" data-th-src="@{js/explorations.js}"></script>
+
+	<div th:replace="fragments/vars :: vars"></div>
+	<input type="hidden" id="userRole" th:value="${userRole}"/>
+	<input type="hidden" id="userID" th:value="${userID}"/>
+
+</body>
+
+</html>

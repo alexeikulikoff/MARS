@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html>
+
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title th:text="#{label.settings}">INSPINIA | Profile</title>
+<link href="css/bootstrap.min.css" rel="stylesheet"
+	data-th-href="@{css/bootstrap.min.css}" />
+<link href="font-awesome/css/font-awesome.css" rel="stylesheet"
+	data-th-href="@{font-awesome/css/font-awesome.css}" />
+
+<link href="css/plugins/slick/slick.css" rel="stylesheet"
+	data-th-href="@{css/plugins/slick/slick.css}" />
+<link href="css/plugins/slick/slick-theme.css" rel="stylesheet"
+	data-th-href="@{css/plugins/slick/slick-theme.css}" />
+
+<!-- Toastr style -->
+<link href="css/plugins/toastr/toastr.min.css" rel="stylesheet"
+	data-th-href="@{css/plugins/toastr/toastr.min.css}" />
+
+<link href="css/animate.css" rel="stylesheet"
+	data-th-href="@{css/animate.css}" />
+
+<link href="css/plugins/dropzone/basic.css" rel="stylesheet"
+	data-th-href="@{css/plugins/dropzone/basic.css}" />
+<link href="css/plugins/dropzone/dropzone.css" rel="stylesheet"
+	data-th-href="@{css/plugins/dropzone/dropzone.css}" />
+<link href="css/plugins/jasny/jasny-bootstrap.min.css" rel="stylesheet"
+	data-th-href="@{css/plugins/jasny/jasny-bootstrap.min.css}" />
+<link href="css/plugins/codemirror/codemirror.css" rel="stylesheet"
+	data-th-href="@{css/plugins/codemirror/codemirror.css}" />
+<link href="css/datatables.min.css" rel="stylesheet"
+	data-th-href="@{css/datatables.min.css}" />
+
+<link href="css/style.css" rel="stylesheet"
+	data-th-href="@{css/style.css}" />
+<link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon"
+	data-th-href="@{img/favicon.ico}" />
+
+<body id="body">
+	<div id="wait_dialog" class="alert alert-success wait-dialog hidden"
+		role="alert">
+		<!-- 	<img class="image-rotate" src="src/img/rotate.gif" width="50" height="50"  />   -->
+		<div class="sk-spinner sk-spinner-cube-grid">
+			<div class="sk-cube"></div>
+			<div class="sk-cube"></div>
+			<div class="sk-cube"></div>
+			<div class="sk-cube"></div>
+			<div class="sk-cube"></div>
+			<div class="sk-cube"></div>
+			<div class="sk-cube"></div>
+			<div class="sk-cube"></div>
+			<div class="sk-cube"></div>
+		</div>
+		<div class="text-center">
+			<span th:text="#{message.pleaseWait}">Please wait</span><span id="checkediD"></span>
+		</div>
+	</div>
+
+	<div id="wrapper">
+		<div th:replace="admin/menu :: menu"></div>
+		<div id="page-wrapper" class="gray-bg">
+			<div class="row border-bottom">
+				<div th:replace="fragments/hdnav :: hdnav"></div>
+			</div>
+			<div class="row wrapper border-bottom white-bg page-heading">
+				<div class="col-lg-10">
+					<h2 th:text="${pageHeader}">Patients</h2>
+					<ol class="breadcrumb">
+						<li><a href="index">Home</a></li>
+						<li th:text="#{label.users}"><a href="#">Home</a></li>
+						<li th:text="${pageHeader}"><a>Extra Pages</a></li>
+					</ol>
+				</div>
+				<div class="col-lg-2"></div>
+			</div>
+			<div class="wrapper wrapper-content">
+				<div class="row">
+					<div class="col-md-9">
+						<div id="nSetId" class="ibox float-e-margins hidden">
+							<div class="ibox-title">
+								<h5 id="nsetTitleID" th:text="#{label.editPaths}">Edit Path</h5>
+								<div class="ibox-tools">
+									<a class="collapse-link"> <i class="fa fa-chevron-up"></i>
+									</a> <a onclick="settings.hideNSetId()"> <i class="fa fa-times"></i>
+									</a>
+								</div>
+							</div>
+							<div  class="ibox-content" >
+								<form role="form" class="form-inline">
+									<div class="form-group">
+									
+										<div class="form-group">
+											<label for="departmentTxt" class="sr-only">Email
+												address</label> <input th:placeholder="#{label.department}"
+												id="departmentTxt" class="form-control" type="text" />
+										</div>
+										<div class="form-group">
+											<label for="ipaddressTxt" class="sr-only">IPAddress</label> <input
+												th:placeholder="#{label.ipaddress}" id="ipaddressTxt"
+												class="form-control" type="text" />
+										</div>
+										<div class="form-group">
+											<label for="dirnameTxt" class="sr-only">DirName</label> <input
+												th:placeholder="#{label.dirname}" id="dirnameTxt"
+												class="form-control" type="text" />
+										</div>
+										<div class="form-group">
+											<label for="loginTxt" class="sr-only">Login</label> <input
+												th:placeholder="#{placeholder.username}" id="loginTxt"
+												class="form-control" type="text" />
+										</div>
+										<div class="form-group">
+											<label for="passwdTxt" class="sr-only">Password</label> <input
+												th:placeholder="#{placeholder.password}" id="passwdTxt"
+												class="form-control" type="text" />
+										</div>
+										<input id="settingsId" type="hidden" />
+										<button class="btn btn-primary" type="submit"
+											th:text="#{button.upload}" onclick="settings.updatePath()">Sign
+											in</button>
+
+									</div>
+
+								</form>
+							</div>
+						</div>
+
+						<div class="ibox float-e-margins">
+
+							<div class="ibox-title">
+								<h5 th:text="#{label.paths}">Paths</h5>
+								<div class="ibox-tools">
+									<a class="collapse-link"> <i class="fa fa-chevron-up"></i></a>
+								</div>
+							</div>
+
+							<div class="ibox-content">
+								<table id="settingsTable" class="table"></table>
+
+							</div>
+
+						</div>
+						   <div class="pull-left">
+								<p>
+								 <button id="btnCheckAll" type="button" class="btn btn-primary btn-sm" onclick="settings.checkAll()" th:text="#{button.checkAll}">CheckAll</button>
+								</p>
+							</div>
+					</div>
+
+					<div class="col-md-3">
+						<div class="ibox float-e-margins">
+<!-- 							
+							<div th:replace="fragments/setting-bottom :: setting-bottom"></div>
+ -->							
+							
+						</div>
+					
+						<div class="ibox float-e-margins">
+							<div class="ibox-title">
+								<h5 th:text="#{label.addPath}">Path</h5>
+								<div class="ibox-tools">
+									<a class="collapse-link"> <i class="fa fa-chevron-up"></i>
+									</a> <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+									
+									</a>
+									
+								
+									
+								</div>
+							</div>
+
+							<div  id="addNewPath" class="ibox-content" style="display: none;">
+								<form class="form-horizontal">
+									<p th:text="#{label.newPathInfo}">Sign in today for more
+										expirience.</p>
+									<div class="form-group margin0">
+										<p class="col-lg-3 control-label"
+											th:text="#{label.department}">Department</p>
+										<div class="col-lg-9">
+											<input id="newDepartment" type="text" class="form-control" />
+					
+										</div>
+									</div>
+									
+									<div class="form-group margin0">
+										<p class="col-lg-3 control-label"
+											th:text="#{label.ipaddress}">IP</p>
+										<div class="col-lg-9">
+											<input id="newIpaddress" type="text" class="form-control" />
+										</div>
+									</div>
+									<div class="form-group margin0">
+										<p class="col-lg-3 control-label"
+											th:text="#{label.dirname}">dirname</p>
+										<div class="col-lg-9">
+											<input id="newDirname" type="text" class="form-control" />
+										</div>
+									</div>
+									<div class="form-group margin0">
+										<p class="col-lg-3 control-label"
+											th:text="#{profile.login}">Login</p>
+										<div class="col-lg-9">
+											<input id="newLogin" type="text" class="form-control" />
+										</div>
+									</div>
+									<div class="form-group margin0">
+										<p class="col-lg-3 control-label"
+											th:text="#{profile.password}">Login</p>
+										<div class="col-lg-9">
+											<input id="newPassword" type="text" class="form-control" />
+										</div>
+									</div>
+								
+									<div class="form-group">
+										<div class="col-lg-offset-2 col-lg-10">
+											<button id="btnSettingSavePath" class="btn btn-sm btn-primary" type="submit" >
+											<i class="fa fa-save"></i><span style="padding-left: 5px;" th:text="#{button.save}"></span>
+											</button>
+										</div>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div th:replace="fragments/footer :: footer"></div>
+		</div>
+	</div>
+
+	<div class="modal inmodal" id="wornBeforeDropPath" tabindex="-1"
+		role="dialog" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content animated fadeIn">
+				<div class="modal-header">
+					<button type="button" class="close"
+						onclick="settings.closeWorning()">
+						<span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+					</button>
+					<i class="fa fa-dropbox modal-icon"></i>
+					<h4 class="modal-title" th:text="#{label.modalDelTitle}">Modal
+						title</h4>
+					<small th:text="#{label.modalDelWorn}">Info</small>
+				</div>
+				<div class="modal-body">
+					<table class="table">
+						<thead>
+							<tr>
+								<th th:text="#{profile.id}">#</th>
+								<th th:text="#{label.department}">department</th>
+								<th th:text="#{label.ipaddress}">ipaddress</th>
+								<th th:text="#{label.dirname}">dirname</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td id="wornId">1</td>
+								<td id="wornDepartnemt">Mark</td>
+								<td id="wornIpaddress">Otto</td>
+								<td id="wornDirname">@mdo</td>
+
+							</tr>
+						</tbody>
+					</table>
+					<input id="wornId2" type="hidden" />
+
+				</div>
+				<div class="modal-footer">
+					<button id="settingWarningDelClose" type="button"
+						class="btn btn-white" th:text="#{button.close}">Close</button>
+					<button id="settingWarningDelete" type="button"
+						class="btn btn-primary" th:text="#{button.drop}">Save
+						changes</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+
+
+	<!-- Mainly scripts -->
+	<script src="js/jquery-3.1.1.min.js"
+		data-th-src="@{js/jquery-3.1.1.min.js}"></script>
+	<script src="js/bootstrap.min.js" data-th-src="@{js/bootstrap.min.js}"></script>
+	<script src="js/plugins/metisMenu/jquery.metisMenu.js"
+		data-th-src="@{js/plugins/metisMenu/jquery.metisMenu.js}"></script>
+	<script src="js/plugins/slimscroll/jquery.slimscroll.min.js"
+		data-th-src="@{js/plugins/slimscroll/jquery.slimscroll.min.js}"></script>
+
+	<!-- Custom and plugin javascript -->
+	<script src="js/inspinia.js" data-th-src="@{js/inspinia.js}"></script>
+	<script src="js/plugins/pace/pace.min.js"
+		data-th-src="@{js/plugins/pace/pace.min.js}"></script>
+
+	<!-- Peity -->
+	<script src="js/plugins/peity/jquery.peity.min.js"
+		data-th-src="@{js/plugins/peity/jquery.peity.min.js}"></script>
+	<script src="js/demo/peity-demo.js"
+		data-th-src="@{js/demo/peity-demo.js}"></script>
+
+	<!-- Jasny -->
+	<script src="js/plugins/jasny/jasny-bootstrap.min.js"
+		data-th-src="@{js/plugins/jasny/jasny-bootstrap.min.js}"></script>
+
+	<!-- DROPZONE -->
+	<script src="js/plugins/dropzone/dropzone.js"
+		data-th-src="@{js/plugins/dropzone/dropzone.js}"></script>
+
+	<!-- CodeMirror -->
+	<script src="js/plugins/codemirror/codemirror.js"
+		data-th-src="@{js/plugins/codemirror/codemirror.js}"></script>
+	<script src="js/plugins/codemirror/mode/xml/xml.js"
+		data-th-src="@{js/plugins/codemirror/mode/xml/xml.js}"></script>
+
+
+	<script src="js/knockout/knockout.js"
+		data-th-src="@{js/knockout/knockout.js}"></script>
+	<!-- Toastr -->
+	<script src="js/plugins/toastr/toastr.min.js"
+		data-th-src="@{js/plugins/toastr/toastr.min.js}"></script>
+
+	<script src="js/datatables.min.js"
+		data-th-src="@{js/datatables.min.js}"></script>
+	<script src="js/plugins/validate/jquery.validate.min.js"
+		data-th-src="@{js/plugins/validate/jquery.validate.min.js}"></script>
+	<script src="js/plugins/validate/additional-methods.min.js"
+		data-th-src="@{js/plugins/validate/additional-methods.min.js}"></script>
+	<script src="js/plugins/validate/localization/messages_ru.min.js"
+		data-th-src="@{js/plugins/validate/localization/messages_ru.min.js}"></script>
+
+	<!-- slick carousel-->
+	<script src="js/plugins/slick/slick.min.js"
+		data-th-src="@{js/plugins/slick/slick.min.js}"></script>
+
+
+
+
+	<script src="js/core.js" data-th-src="@{js/core.js}"></script>
+	<script src="js/users.js" data-th-src="@{js/settings.js}"></script>
+
+	<div th:replace="fragments/vars :: vars"></div>
+
+
+</body>
+
+</html>

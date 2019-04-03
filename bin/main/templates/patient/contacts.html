@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html>
+
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title th:text="#{label.patients}">INSPINIA | Profile</title>
+<link href="css/bootstrap.min.css" rel="stylesheet"
+	data-th-href="@{css/bootstrap.min.css}" />
+<link href="font-awesome/css/font-awesome.css" rel="stylesheet"
+	data-th-href="@{font-awesome/css/font-awesome.css}" />
+<!-- Toastr style -->
+<link href="css/plugins/toastr/toastr.min.css" rel="stylesheet"
+	data-th-href="@{css/plugins/toastr/toastr.min.css}" />
+
+<link href="css/animate.css" rel="stylesheet"
+	data-th-href="@{css/animate.css}" />
+
+<link href="css/plugins/dropzone/basic.css" rel="stylesheet"
+	data-th-href="@{css/plugins/dropzone/basic.css}" />
+<link href="css/plugins/dropzone/dropzone.css" rel="stylesheet"
+	data-th-href="@{css/plugins/dropzone/dropzone.css}" />
+<link href="css/plugins/jasny/jasny-bootstrap.min.css" rel="stylesheet"
+	data-th-href="@{css/plugins/jasny/jasny-bootstrap.min.css}" />
+<link href="css/plugins/codemirror/codemirror.css" rel="stylesheet"
+	data-th-href="@{css/plugins/codemirror/codemirror.css}" />
+<link href="css/datatables.min.css" rel="stylesheet" data-th-href="@{css/datatables.min.css}" />
+
+<link href="css/plugins/steps/jquery.steps.css" rel="stylesheet"
+	data-th-href="@{css/plugins/steps/jquery.steps.css}" />
+
+<link href="css/style.css" rel="stylesheet"
+	data-th-href="@{css/style.css}" />
+<link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon"
+	data-th-href="@{img/favicon.ico}" />
+
+<body id="body">
+	<div id="wait_dialog" class="alert alert-success wait-dialog hidden"
+		role="alert">
+		<!-- 	<img class="image-rotate" src="src/img/rotate.gif" width="50" height="50"  />   -->
+		<div class="sk-spinner sk-spinner-cube-grid">
+			<div class="sk-cube"></div>
+			<div class="sk-cube"></div>
+			<div class="sk-cube"></div>
+			<div class="sk-cube"></div>
+			<div class="sk-cube"></div>
+			<div class="sk-cube"></div>
+			<div class="sk-cube"></div>
+			<div class="sk-cube"></div>
+			<div class="sk-cube"></div>
+		</div>
+		<div class="text-center">
+			<span th:text="#{message.pleaseWait}">Please wait</span>
+		</div>
+	</div>
+
+	<div id="wrapper">
+		<div th:replace="patient/menu :: menu"></div>
+		<div id="page-wrapper" class="gray-bg">
+			<div class="row border-bottom">
+				<div th:replace="fragments/hdnav :: hdnav"></div>
+			</div>
+			<div class="row wrapper border-bottom white-bg page-heading">
+				<div class="col-lg-10">
+					<h2 th:text="${pageHeader}">Patients</h2>
+					<ol class="breadcrumb">
+						<li><a href="index">Home</a></li>
+
+						<li th:text="${pageHeader}"><a>Extra Pages</a></li>
+					</ol>
+				</div>
+				<div class="col-lg-2"></div>
+			</div>
+			<div class="wrapper wrapper-content animated fadeInRight">
+				<div class="row">
+					<div class="col-lg-2">
+						<button id="newContactForm" class="btn btn-primary pull-left"
+							th:text="#{label.newContact}">newContact</button>
+					</div>
+				</div>
+				<br />
+
+				<div id="newContactId" class="ibox-content col-lg-6 hidden">
+					<p th:text="#{profile.master}">Master</p>
+					<form id="form" action="#" class="wizard-big">
+						<h1>Email</h1>
+						<fieldset>
+							<h2 th:text="#{label.wizardEmail}">Contact Email</h2>
+							<div class="row">
+								<div class="col-lg-8">
+									<label th:text="#{profile.email} +' *'">Email *</label> <input
+										id="email" name="email" type="text"
+										class="form-control required email" />
+								</div>
+								<div class="col-lg-4">
+									<div class="text-center">
+										<div style="margin-top: 20px">
+											<i class="fa fa-sign-in"
+												style="font-size: 180px; color: #e5e5e5"></i>
+										</div>
+									</div>
+								</div>
+							</div>
+
+						</fieldset>
+						<h1 th:text="#{profile.fioShort}">Profile</h1>
+						<fieldset>
+							<h2 th:text="#{label.wizardfio}">Profile Information</h2>
+							<div class="row">
+								<div class="col-lg-6 b-r">
+									<div class="form-group">
+										<label th:text="#{profile.surname}+' *'">Surname name *</label> <input
+											id="surname" name="surname" type="text"
+											class="form-control required" />
+									</div>
+									<div class="form-group">
+										<label th:text="#{profile.firstname}+' *'">First name *</label> <input
+											id="firstname" name="firstname" type="text"
+											class="form-control required" />
+									</div>
+									<div class="form-group">
+										<label th:text="#{profile.lastname}+' *'">Last name *</label> <input
+											id="lastname" name="lastname" type="text"
+											class="form-control required" />
+									</div>
+								</div>
+							</div>
+						</fieldset>
+					
+						<h1 th:text="#{profile.work}">Warning</h1>
+						<fieldset>
+							<h2 th:text="#{label.wizardwork}">Profile Information</h2>
+							<div class="row">
+								<div class="col-lg-6">
+									<div class="form-group">
+										<label th:text="#{profile.work}">First name *</label> <input
+											id="childwork" name="childwork" type="text"
+											class="form-control" />
+									</div>
+									<div class="form-group">
+										<label th:text="#{profile.post}">First name *</label> <input
+											id="childpost" name="childpost" type="text"
+											class="form-control" />
+									</div>
+									<div class="form-group">
+										<label th:text="#{profile.phone}">First name *</label> <input
+											id="childphone" name="childphone" type="text"
+											class="form-control" />
+									</div>
+								</div>
+								<div class="col-lg-6">
+									<div class="bg-warning p-xs b-r-sm">
+										<p th:text="#{profile.workinfo}">Example text</p>
+									</div>
+								</div>
+							</div>
+						</fieldset>
+						<h1 th:text="#{label.photo}">Photo</h1>
+						<fieldset>
+							<div class="col-sm-6">
+							<h2 th:text="#{label.photoUpload}">Upload Photo</h2>
+							<div class="row">
+								<form class="form-horizontal" action="" id="formContent_Cont"
+									method="post" enctype="multipart/form-data">
+									<div id="imgUserContaiter_Cont" class="ibox-content ibox-content-with-photo">
+										<div class="but1">
+											<img id="userImage_Cont" class="img-responsive" src="img/mibs-empty-profile.jpg"/> 
+											
+											<label id="removeImageBtn_Cont"
+												class="btn  btn-floating btn-primary hidden" type="button"
+												data-toggle="tooltip" data-placement="right"
+												th:title="#{button.removePic}"><i
+												class="fa fa-trash"></i> </label> <label for="upload_Cont"
+												id="btnAddUserImage_Cont" type="button" class="btn btn-floating btn-primary"
+												data-placement="right" th:title="#{button.addPic}"><i class="fa fa-camera"></i>
+											</label> <input type="file" id="upload_Cont" style="display: none" oninput="core.uploadTempImage(this.value,'formContent_Cont','upload_Cont','userImage_Cont')" />
+
+										</div>
+									</div>
+								</form>
+							</div>
+							</div>
+						</fieldset>
+					</form>
+					
+				</div>
+
+
+				<div id="contactContainer" class="row">
+				
+				</div>
+
+			</div>
+
+
+			<div th:replace="fragments/footer :: footer"></div>
+		</div>
+	</div>
+
+	<div th:replace="fragments/modal/modal4 :: modal4"></div>
+
+	<!-- Mainly scripts -->
+	<script src="js/jquery-3.1.1.min.js"
+		data-th-src="@{js/jquery-3.1.1.min.js}"></script>
+	<script src="js/bootstrap.min.js" data-th-src="@{js/bootstrap.min.js}"></script>
+	<script src="js/plugins/metisMenu/jquery.metisMenu.js"
+		data-th-src="@{js/plugins/metisMenu/jquery.metisMenu.js}"></script>
+	<script src="js/plugins/slimscroll/jquery.slimscroll.min.js"
+		data-th-src="@{js/plugins/slimscroll/jquery.slimscroll.min.js}"></script>
+
+	<!-- Custom and plugin javascript -->
+	<script src="js/inspinia.js" data-th-src="@{js/inspinia.js}"></script>
+	<script src="js/plugins/pace/pace.min.js"
+		data-th-src="@{js/plugins/pace/pace.min.js}"></script>
+
+	<!-- Peity -->
+	<script src="js/plugins/peity/jquery.peity.min.js"
+		data-th-src="@{js/plugins/peity/jquery.peity.min.js}"></script>
+	<script src="js/demo/peity-demo.js"
+		data-th-src="@{js/demo/peity-demo.js}"></script>
+
+	<!-- Jasny -->
+	<script src="js/plugins/jasny/jasny-bootstrap.min.js"
+		data-th-src="@{js/plugins/jasny/jasny-bootstrap.min.js}"></script>
+
+	<!-- DROPZONE -->
+	<script src="js/plugins/dropzone/dropzone.js"
+		data-th-src="@{js/plugins/dropzone/dropzone.js}"></script>
+
+	<!-- CodeMirror -->
+	<script src="js/plugins/codemirror/codemirror.js"
+		data-th-src="@{js/plugins/codemirror/codemirror.js}"></script>
+	<script src="js/plugins/codemirror/mode/xml/xml.js"
+		data-th-src="@{js/plugins/codemirror/mode/xml/xml.js}"></script>
+
+
+	<script src="js/knockout/knockout.js"
+		data-th-src="@{js/knockout/knockout.js}"></script>
+	<!-- Toastr -->
+	<script src="js/plugins/toastr/toastr.min.js"
+		data-th-src="@{js/plugins/toastr/toastr.min.js}"></script>
+
+	<script src="js/datatables.min.js"  data-th-src="@{js/datatables.min.js}"></script>
+
+	
+	<script src="js/plugins/validate/jquery.validate.min.js"
+		data-th-src="@{js/plugins/validate/jquery.validate.min.js}"></script>
+	<script src="js/plugins/validate/additional-methods.min.js"
+		data-th-src="@{js/plugins/validate/additional-methods.min.js}"></script>
+	<script src="js/plugins/validate/localization/messages_ru.min.js"
+		data-th-src="@{js/plugins/validate/localization/messages_ru.min.js}"></script>
+
+	<script src="@{js/plugins/steps/jquery.steps.min.js}"
+		data-th-src="@{js/plugins/steps/jquery.steps.min.js}"></script>
+
+	<script src="js/core.js" data-th-src="@{js/core.js}"></script>
+	<script src="js/contacts.js" data-th-src="@{js/contacts.js}"></script>
+
+	<div th:replace="fragments/vars :: vars"></div>
+
+
+</body>
+
+</html>

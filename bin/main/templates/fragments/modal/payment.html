@@ -1,0 +1,25 @@
+<div th:fragment="payment" class="modal inmodal" id="payment" tabindex="-1" role="dialog" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content animated fadeIn">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">
+					<span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+				</button>
+				<i class="fa fa-rouble modal-icon"></i>
+				<h4 class="modal-title" th:text="#{label.paymentTitle}">Modal title</h4>
+			</div>
+			<div class="modal-body">
+				<p class="text-center" th:text="#{label.addPaymentInfo}">11
+				</p>
+				<p class="text-center">
+					<strong id="nPaymentTitleID"></strong><strong>?</strong>
+				</p>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-white" data-dismiss="modal" th:text="#{button.cancel}">Close</button>
+				<button type="button" class="btn btn-primary" onclick="users.confirmPayment()" th:text="#{button.addPayment}">Save changes</button>
+			</div>
+		</div>
+	</div>
+</div>
+

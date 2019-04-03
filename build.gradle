@@ -1,0 +1,143 @@
+
+buildscript {
+    repositories {
+        mavenCentral()
+         maven { url "https://repository.jboss.org/nexus/content/repositories/releases" }
+   		 maven { url 'https://repo.spring.io/snapshot' }
+   		 maven { url 'http://central.maven.org/maven2' }
+    
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.5.9.RELEASE")
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+apply plugin: 'org.springframework.boot'
+
+
+ext {
+    springSecurityVersion = "4.0.4.RELEASE"
+    mysqlConectorVersion ="5.1.38" 
+    springSessionVersion ="1.3.1.RELEASE"
+    springWebsocketVersion ="4.2.5.RELEASE" 
+    emailNotification = ""
+}
+
+jar {
+    baseName = 'mibs-cabinet'
+    version =  '1.1'
+}
+repositories {
+    // Use 'jcenter' for resolving your dependencies.
+    // You can declare any Maven/Ivy/file repository here.
+    mavenCentral()
+    jcenter()
+    maven { url 'https://repo.spring.io/snapshot' }
+    maven { url 'http://central.maven.org/maven2' }
+    maven { url 'https://jcifs.samba.org/src' }
+  
+ }
+
+
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+/*
+task setHttpProxyFromEnv {
+    def map = ['HTTP_PROXY': 'http', 'HTTPS_PROXY': 'https']
+    for (e in System.getenv()) {
+        def key = e.key.toUpperCase()
+        if (key in map) {
+            def base = map[key]
+            def url = e.value.toURL()
+            println " - systemProp.${base}.proxy=${url.host}:${url.port}"
+            System.setProperty("${base}.proxyHost", url.host.toString())
+            System.setProperty("${base}.proxyPort", url.port.toString())
+        }
+    }
+}
+*/
+// build.dependsOn setHttpProxyFromEnv
+
+
+dependencies {
+   
+      
+   // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-thymeleaf
+	compile("org.springframework.boot:spring-boot-starter-thymeleaf:1.5.10.RELEASE")
+	
+   // https://mvnrepository.com/artifact/nz.net.ultraq.thymeleaf/thymeleaf-layout-dialect
+	compile group: 'nz.net.ultraq.thymeleaf', name: 'thymeleaf-layout-dialect', version: '2.2.2'
+   
+   
+  	// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-devtools
+	compile group: 'org.springframework.boot', name: 'spring-boot-devtools', version: '1.5.10.RELEASE'
+  
+     
+  
+ 	// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-data-redis
+	compile group: 'org.springframework.boot', name: 'spring-boot-starter-data-redis', version: '1.5.10.RELEASE'
+    
+  
+   // https://mvnrepository.com/artifact/org.springframework.session/spring-session
+	compile group: 'org.springframework.session', name: 'spring-session', version: '1.3.1.RELEASE'
+   
+    
+    compile("org.springframework.boot:spring-boot-starter-security")
+	compile("org.springframework.security:spring-security-web:$springSecurityVersion")
+    compile("org.springframework.security:spring-security-config:$springSecurityVersion")
+    compile("org.springframework.security:spring-security-messaging:$springSecurityVersion")
+	compile("org.springframework.security:spring-security-data:$springSecurityVersion")
+   
+	compile group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: '1.5.10.RELEASE'
+  
+  
+	
+	compile group: 'org.postgresql', name: 'postgresql', version: '42.2.1'
+  	// https://mvnrepository.com/artifact/com.sun.mail/smtp
+	compile group: 'com.sun.mail', name: 'smtp', version: '1.4.5'
+  	// https://mvnrepository.com/artifact/com.sun.mail/javax.mail
+	compile group: 'com.sun.mail', name: 'javax.mail', version: '1.6.0'
+  	
+  	// https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
+	compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.0'
+  
+  	// https://mvnrepository.com/artifact/org.hibernate/hibernate-java8
+	compile group: 'org.hibernate', name: 'hibernate-java8', version: '5.2.13.Final'
+  	
+  	// https://mvnrepository.com/artifact/commons-codec/commons-codec
+	compile group: 'commons-codec', name: 'commons-codec', version: '1.11'
+	
+	// https://mvnrepository.com/artifact/org.apache.commons/commons-io
+	compile group: 'org.apache.commons', name: 'commons-io', version: '1.3.2'
+	
+	// https://mvnrepository.com/artifact/com.mortennobel/java-image-scaling
+	compile group: 'com.mortennobel', name: 'java-image-scaling', version: '0.8.6'
+	
+	
+//	 /home/admin3/workspace/dcm4che/dcm4che-assembly/target
+	 //compile fileTree(dir: '/home/admin3/workspace/dcm4che/dcm4che-assembly/target/dcm4che-5.13.0-bin/dcm4che-5.13.0/lib', include: '*.jar')
+	 compile fileTree(dir: '/home/admin2/dcm4che/dcm4che-assembly/target/dcm4che-5.13.0-bin/dcm4che-5.13.0/lib', include: '*.jar')
+			
+	 // https://mvnrepository.com/artifact/net.lingala.zip4j/zip4j
+	compile group: 'net.lingala.zip4j', name: 'zip4j', version: '1.3.2'
+	 
+	
+	 compile files('jcifs-1.3.19.jar')
+
+
+	// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-test
+	testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: '1.5.10.RELEASE'
+
+
+  	// https://mvnrepository.com/artifact/org.springframework.security/spring-security-test
+	testCompile group: 'org.springframework.security', name: 'spring-security-test', version: '5.0.1.RELEASE'
+  
+  	
+	
+    testCompile 'junit:junit:4.12'
+}

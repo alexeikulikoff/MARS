@@ -1,0 +1,135 @@
+<var-page th:fragment="vars">
+   
+	<script th:inline="javascript">
+	//<![CDATA[
+	
+	    var  $error = {},
+	   		 $success = {},
+	   		 $profile = {},
+	   		 $label = {},
+	   		 $button = {};
+	    	
+		$error.updateImage		= [[#{error.updateImage}]]	;   
+		$error.engError 		= [[#{error.engError}]];
+		$error.network			= [[#{error.network}]];
+		$error.removeImage		= [[#{error.removeImage}]];
+		$error.imageSave		= [[#{error.imageSave}]];
+		$error.userUpdated		= [[#{error.userUpdated}]];
+		$error.duplicateEmail	= [[#{error.duplicateEmail}]];
+		$error.duplicateLogin   = [[#{error.duplicateLogin}]];
+		$error.uploadFileSize   = [[#{error.uploadFileSize}]];
+		$error.userdrop			= [[#{error.userdrop}]];
+		$error.filetypeExp		= [[#{error.filetypeExp}]];
+		$error.filetypeDIC		= [[#{error.filetypeDIC}]];
+		$error.explSaved		= [[#{error.explSaved}]];
+		$error.pathUpdated		= [[#{error.pathUpdated}]];
+		$error.pathSaved		= [[#{error.pathSaved}]];
+		$error.pathDeleted		= [[#{error.pathDeleted}]];
+		$error.contactCreated	= [[#{error.contactCreated}]];
+		$error.accessChanged	= [[#{error.accessChanged}]];
+		$error.conclusionSaved	= [[#{error.conclusionSaved}]];
+		$error.paymentSaved		= [[#{error.paymentSaved}]];
+		$error.sumisnull		= [[#{error.sumisnull}]];
+		$error.scommentsnull	= [[#{error.scommentsnull}]];
+		$error.invitationSaved  = [[#{error.invitationSaved}]];
+		$error.passwordSend		= [[#{error.passwordSend}]];
+		$error.explUpdate		= [[#{error.explUpdate}]];
+		$error.pathUpdate		= [[#{error.pathUpdate}]];
+		
+		$success.imageRemove	= [[#{success.imageRemove}]];
+		$success.imageSave		= [[#{success.imageSave}]];
+		$success.userUpdated    = [[#{success.userUpdated}]];
+		$success.userDroped		= [[#{success.userDroped}]];
+		$success.patientSaved	= [[#{success.patientSaved}]];
+		$success.userSaved		= [[#{success.userSaved}]];
+		$success.explSaved 		= [[#{success.explSaved}]];
+		$success.pathUpdated	= [[#{success.pathUpdated}]];
+		$success.pathSaved		= [[#{success.pathSaved}]];
+		$success.pathDeleted	= [[#{success.pathDeleted}]];
+		$success.contactCreated = [[#{success.contactCreated}]];
+		$success.conclusionSaved= [[#{success.conclusionSaved}]];
+		$success.paymentSaved	= [[#{success.paymentSaved}]];
+		$success.invitationSaved =[[#{success.invitationSaved}]];
+		$success.passwordSend	 =[[#{success.passwordSend}]]; 
+		$success.explUpdate		 =[[#{success.explUpdate}]];
+		$success.pathUpdate		 = [[#{success.pathUpdate}]];
+		
+		
+		$button.take			= [[#{button.take}]];
+		$button.removePic		= [[#{button.removePic}]];
+		$button.addPic			= [[#{button.addPic}]];
+		$button.change			= [[#{button.change}]];
+		$button.drop			= [[#{button.drop}]];
+		$button.newPatient 		= [[#{button.newPatient}]];
+		$button.upload			= [[#{button.upload}]];
+		$button.showExploration = [[#{button.showExploration}]];
+		$button.addExploration	= [[#{button.addExploration}]];
+		$button.testLink		= [[#{button.testLink}]];
+		$button.cancel			= [[#{button.cancel}]];
+		$button.access			= [[#{button.access}]];
+		$button.invitation		= [[#{button.invitation}]];
+		$button.hide			= [[#{button.hide}]];
+		$button.download		= [[#{button.download}]];
+		$button.open			= [[#{button.open}]];
+		$button.save			= [[#{button.save}]];
+		$button.build			= [[#{button.build}]];
+		$button.rebuild			= [[#{button.rebuild}]];
+		
+		
+		$profile.surname		= [[#{profile.surname}]];
+		$profile.firstname		= [[#{profile.firstname}]];
+		$profile.lastname		= [[#{profile.lastname}]]; 
+		$profile.email			= [[#{profile.email}]];
+		$profile.id				= [[#{profile.id}]];
+		$profile.regdate		= [[#{profile.regdate}]];
+		$profile.login			= [[#{profile.login}]];
+		$profile.password		= [[#{profile.password}]];
+		$profile.fio			= [[#{profile.fio}]];
+		$profile.action			= [[#{profile.action}]];
+		$profile.newPatient		= [[#{profile.newPatient}]];
+		$profile.editPatient 	= [[#{profile.editPatient}]];
+		$profile.dropPatient 	= [[#{profile.dropPatient}]];
+		$profile.takeWhatChange = [[#{profile.takeWhatChange}]];
+		$profile.takeWhatNew	= [[#{profile.takeWhatNew}]];
+		
+		
+		$label.path				= [[#{label.path}]];
+		$label.fileToUpload     = [[#{label.fileToUpload}]];
+		$label.date				= [[#{label.date}]];
+		$label.explorations		= [[#{label.explorations}]];
+		$label.patient			= [[#{label.patient}]];
+		$label.newEplorations	= [[#{label.newEplorations}]];
+		$label.conclusion2		= [[#{label.conclusion2}]];
+		$label.dicomArchive2	= [[#{label.dicomArchive2}]];
+		$label.showDicom		= [[#{label.showDicom}]];
+		$label.department		= [[#{label.department}]];
+		$label.ipaddress		= [[#{label.ipaddress}]];
+		$label.hostname			= [[#{label.hostname}]];
+		$label.dirname			= [[#{label.dirname}]];
+		$label.action			= [[#{label.action}]];
+		$label.status			= [[#{label.status}]];
+		$label.doAction			= [[#{label.doAction}]];
+		$label.code				= [[#{label.code}]];
+		$label.uniqueid			= [[#{label.uniqueid}]];
+		$label.currentstep		= [[#{label.currentstep}]];
+		$label.Pagination		= [[#{label.Pagination}]];
+		$label.Finish			= [[#{label.Finish}]];
+		$label.Next				= [[#{label.Next}]];
+		$label.Previous			= [[#{label.Previous}]];
+		$label.Loading			= [[#{label.Loading}]];
+		$label.app				= [[#{label.app}]];
+		$label.loadFile			= [[#{label.loadFile}]];
+		$label.name				= [[#{label.name}]];
+		$label.show				= [[#{label.show}]];
+		$label.comments			= [[#{label.comments}]];
+		$label.sum				= [[#{label.sum}]];
+		$label.date				= [[#{label.date}]];
+		$label.paidDate			= [[#{label.paidDate}]];
+		$label.paidtill			= [[#{label.paidtill}]];
+		$label.invitation		= [[#{label.invitation}]];
+		$label.loadExploration  = [[#{label.loadExploration}]];
+		
+		//]]>	
+	</script>
+   
+</var-page>

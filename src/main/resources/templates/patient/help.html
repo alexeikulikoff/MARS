@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html>
+
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title th:text="#{label.help}">INSPINIA | Profile</title>
+<link href="css/bootstrap.min.css" rel="stylesheet"
+	data-th-href="@{css/bootstrap.min.css}" />
+<link href="font-awesome/css/font-awesome.css" rel="stylesheet"
+	data-th-href="@{font-awesome/css/font-awesome.css}" />
+
+<link href="css/plugins/slick/slick.css" rel="stylesheet"
+	data-th-href="@{css/plugins/slick/slick.css}" />
+<link href="css/plugins/slick/slick-theme.css" rel="stylesheet"
+	data-th-href="@{css/plugins/slick/slick-theme.css}" />
+
+<!-- Toastr style -->
+<link href="css/plugins/toastr/toastr.min.css" rel="stylesheet"
+	data-th-href="@{css/plugins/toastr/toastr.min.css}" />
+
+<link href="css/animate.css" rel="stylesheet"
+	data-th-href="@{css/animate.css}" />
+
+<link href="css/plugins/dropzone/basic.css" rel="stylesheet"
+	data-th-href="@{css/plugins/dropzone/basic.css}" />
+<link href="css/plugins/dropzone/dropzone.css" rel="stylesheet"
+	data-th-href="@{css/plugins/dropzone/dropzone.css}" />
+<link href="css/plugins/jasny/jasny-bootstrap.min.css" rel="stylesheet"
+	data-th-href="@{css/plugins/jasny/jasny-bootstrap.min.css}" />
+<link href="css/plugins/codemirror/codemirror.css" rel="stylesheet"
+	data-th-href="@{css/plugins/codemirror/codemirror.css}" />
+<link href="css/datatables.min.css" rel="stylesheet"
+	data-th-href="@{css/datatables.min.css}" />
+
+<link href="css/style.css" rel="stylesheet"
+	data-th-href="@{css/style.css}" />
+<link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon"
+	data-th-href="@{img/favicon.ico}" />
+
+<body id="body">
+	<div id="wait_dialog" class="alert alert-success wait-dialog hidden"
+		role="alert">
+		<!-- 	<img class="image-rotate" src="src/img/rotate.gif" width="50" height="50"  />   -->
+		<div class="sk-spinner sk-spinner-cube-grid">
+			<div class="sk-cube"></div>
+			<div class="sk-cube"></div>
+			<div class="sk-cube"></div>
+			<div class="sk-cube"></div>
+			<div class="sk-cube"></div>
+			<div class="sk-cube"></div>
+			<div class="sk-cube"></div>
+			<div class="sk-cube"></div>
+			<div class="sk-cube"></div>
+		</div>
+		<div class="text-center">
+			<span th:text="#{message.pleaseWait}">Please wait</span>
+		</div>
+	</div>
+
+	<div id="wrapper">
+		<div th:replace="patient/menu :: menu"></div>
+		<div id="page-wrapper" class="gray-bg">
+			<div class="row border-bottom">
+				<div th:replace="fragments/hdnav :: hdnav"></div>
+			</div>
+			<div class="row wrapper border-bottom white-bg page-heading">
+				<div class="col-lg-10">
+					<h2 th:text="${pageHeader}">Patients</h2>
+					<ol class="breadcrumb">
+						<li><a href="index">Home</a></li>
+
+						<li th:text="${pageHeader}"><a>Extra Pages</a></li>
+					</ol>
+				</div>
+				<div class="col-lg-2"></div>
+			</div>
+			<div class="wrapper wrapper-content">
+				<div class="row">
+					<div class="col-lg-12">
+					  <div class="ibox-content" id="ibox-content">
+						<div class="ibox float-e-margins">
+							<div id="vertical-timeline"
+								class="vertical-container dark-timeline center-orientation">
+								<div class="vertical-timeline-block">
+									<div class="vertical-timeline-icon navy-bg">
+										<i class="fa fa-address-card-o"></i>
+									</div>
+
+									<div class="vertical-timeline-content">
+										<h2 th:text="#{label.userProfile}">Profile</h2>
+										<p th:text="#{help.begin.text}"></p>
+										<img src="img/h1.png" class="img-rounded" alt="Profile" width="480"/> 	
+										<span class="vertical-date" th:text="#{help.begin}"> Today <br /> 
+										</span>
+									</div>
+								</div>
+
+								<div class="vertical-timeline-block">
+									<div class="vertical-timeline-icon blue-bg">
+										<i class="fa fa-stethoscope"></i>
+									</div>
+
+									<div class="vertical-timeline-content">
+										<h2 th:text="#{label.explorations}">Explorations</h2>
+										<p th:text="#{help.exploration.text}">Lorem Ipsum is simply dummy text of the printing and
+											typesetting industry. Lorem Ipsum has been the industry's
+											standard dummy text ever since.</p>
+										<img src="img/h2.png" class="img-rounded" alt="Explorations" width="480"/> 	
+										
+										 <span class="vertical-date" th:text="#{help.explore}">Today<br/> 
+										</span>
+									</div>
+								</div>
+
+								<div class="vertical-timeline-block">
+									<div class="vertical-timeline-icon lazur-bg">
+										<i class="fa fa-user-md"></i>
+									</div>
+
+									<div class="vertical-timeline-content">
+										<h2 th:text="#{label.contacts}">Contacts</h2>
+										<p th:text="#{help.contacts.text}">Go to shop and find some products. Lorem Ipsum is
+											simply dummy text of the printing and typesetting industry.
+											Lorem Ipsum has been the industry's.</p>
+										<img src="img/h3.png" class="img-rounded" alt="Contacts" width="480"/> 
+										
+										 <span class="vertical-date"  th:text="#{help.contacts}"> Yesterday <br />
+										</span>
+									</div>
+								</div>
+
+								<div class="vertical-timeline-block">
+									<div class="vertical-timeline-icon yellow-bg">
+										<i class="fa fa-medkit"></i>
+									</div>
+
+									<div class="vertical-timeline-content">
+										<h2 th:text="#{label.invitations}">Invitations</h2>
+										<p th:text="#{help.invitation.text}">Lorem ipsum dolor sit amet, consectetur adipisicing
+											elit. Iusto, optio, dolorum provident rerum aut hic quasi
+											placeat iure tempora laudantium ipsa ad debitis unde? Iste
+											voluptatibus minus veritatis qui ut.</p>
+										<img src="img/h4.png" class="img-rounded" alt="Contacts" width="480"/> 	
+										<span class="vertical-date"   th:text="#{help.consult}">Yesterday <br />
+										</span>
+									</div>
+								</div>
+							</div>
+						</div>
+					   </div>
+					
+					</div>
+
+				</div>
+			</div>
+			<div th:replace="fragments/footer :: footer"></div>
+		</div>
+	</div>
+
+
+
+	<!-- Mainly scripts -->
+	<script src="js/jquery-3.1.1.min.js"
+		data-th-src="@{js/jquery-3.1.1.min.js}"></script>
+	<script src="js/bootstrap.min.js" data-th-src="@{js/bootstrap.min.js}"></script>
+	<script src="js/plugins/metisMenu/jquery.metisMenu.js"
+		data-th-src="@{js/plugins/metisMenu/jquery.metisMenu.js}"></script>
+	<script src="js/plugins/slimscroll/jquery.slimscroll.min.js"
+		data-th-src="@{js/plugins/slimscroll/jquery.slimscroll.min.js}"></script>
+
+	<!-- Custom and plugin javascript -->
+	<script src="js/inspinia.js" data-th-src="@{js/inspinia.js}"></script>
+	<script src="js/plugins/pace/pace.min.js"
+		data-th-src="@{js/plugins/pace/pace.min.js}"></script>
+
+	<!-- Peity -->
+	<script src="js/plugins/peity/jquery.peity.min.js"
+		data-th-src="@{js/plugins/peity/jquery.peity.min.js}"></script>
+	<script src="js/demo/peity-demo.js"
+		data-th-src="@{js/demo/peity-demo.js}"></script>
+
+	<!-- Jasny -->
+	<script src="js/plugins/jasny/jasny-bootstrap.min.js"
+		data-th-src="@{js/plugins/jasny/jasny-bootstrap.min.js}"></script>
+
+	<!-- DROPZONE -->
+	<script src="js/plugins/dropzone/dropzone.js"
+		data-th-src="@{js/plugins/dropzone/dropzone.js}"></script>
+
+	<!-- CodeMirror -->
+	<script src="js/plugins/codemirror/codemirror.js"
+		data-th-src="@{js/plugins/codemirror/codemirror.js}"></script>
+	<script src="js/plugins/codemirror/mode/xml/xml.js"
+		data-th-src="@{js/plugins/codemirror/mode/xml/xml.js}"></script>
+
+
+	<script src="js/knockout/knockout.js"
+		data-th-src="@{js/knockout/knockout.js}"></script>
+	<!-- Toastr -->
+	<script src="js/plugins/toastr/toastr.min.js"
+		data-th-src="@{js/plugins/toastr/toastr.min.js}"></script>
+
+	<script src="js/datatables.min.js"
+		data-th-src="@{js/datatables.min.js}"></script>
+	<script src="js/plugins/validate/jquery.validate.min.js"
+		data-th-src="@{js/plugins/validate/jquery.validate.min.js}"></script>
+	<script src="js/plugins/validate/additional-methods.min.js"
+		data-th-src="@{js/plugins/validate/additional-methods.min.js}"></script>
+	<script src="js/plugins/validate/localization/messages_ru.min.js"
+		data-th-src="@{js/plugins/validate/localization/messages_ru.min.js}"></script>
+
+	<!-- slick carousel-->
+	<script src="js/plugins/slick/slick.min.js"
+		data-th-src="@{js/plugins/slick/slick.min.js}"></script>
+
+	<script src="js/core.js" data-th-src="@{js/core.js}"></script>
+
+
+
+	<div th:replace="fragments/vars :: vars"></div>
+
+
+</body>
+
+</html>

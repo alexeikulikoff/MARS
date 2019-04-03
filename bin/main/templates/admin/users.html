@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title th:text="${usersTitle}">INSPINIA | Profile</title>
+<link href="css/bootstrap.min.css" rel="stylesheet"
+	data-th-href="@{css/bootstrap.min.css}" />
+<link href="font-awesome/css/font-awesome.css" rel="stylesheet"
+	data-th-href="@{font-awesome/css/font-awesome.css}" />
+<!-- Toastr style -->
+<link href="css/plugins/toastr/toastr.min.css" rel="stylesheet"
+	data-th-href="@{css/plugins/toastr/toastr.min.css}" />
+
+<link href="css/animate.css" rel="stylesheet"
+	data-th-href="@{css/animate.css}" />
+
+<link href="css/plugins/dropzone/basic.css" rel="stylesheet"
+	data-th-href="@{css/plugins/dropzone/basic.css}" />
+<link href="css/plugins/dropzone/dropzone.css" rel="stylesheet"
+	data-th-href="@{css/plugins/dropzone/dropzone.css}" />
+<link href="css/plugins/jasny/jasny-bootstrap.min.css" rel="stylesheet"
+	data-th-href="@{css/plugins/jasny/jasny-bootstrap.min.css}" />
+<link href="css/plugins/codemirror/codemirror.css" rel="stylesheet"
+	data-th-href="@{css/plugins/codemirror/codemirror.css}" />
+<link href="css/datatables.min.css" rel="stylesheet"
+	data-th-href="@{css/datatables.min.css}" />
+
+<link href="css/style.css" rel="stylesheet"
+	data-th-href="@{css/style.css}" />
+<link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon"
+	data-th-href="@{img/favicon.ico}" />
+
+<body id="body">
+	<div id="wait_dialog" class="alert alert-success wait-dialog hidden"
+		role="alert">
+		<!-- 	<img class="image-rotate" src="src/img/rotate.gif" width="50" height="50"  />   -->
+		<div class="sk-spinner sk-spinner-cube-grid">
+			<div class="sk-cube"></div>
+			<div class="sk-cube"></div>
+			<div class="sk-cube"></div>
+			<div class="sk-cube"></div>
+			<div class="sk-cube"></div>
+			<div class="sk-cube"></div>
+			<div class="sk-cube"></div>
+			<div class="sk-cube"></div>
+			<div class="sk-cube"></div>
+		</div>
+		<div class="text-center">
+			<span th:text="#{message.pleaseWait}">Please wait</span>
+		</div>
+	</div>
+
+	<div id="wrapper">
+		<div th:replace="admin/menu :: menu"></div>
+		<div id="page-wrapper" class="gray-bg">
+			<div class="row border-bottom">
+				<div th:replace="fragments/hdnav :: hdnav"></div>
+			</div>
+			<div class="row wrapper border-bottom white-bg page-heading">
+				<div class="col-lg-10">
+					<h2 th:text="${pageHeader}">Patients</h2>
+					<ol class="breadcrumb">
+						<li><a href="index">Home</a></li>
+						<li th:text="#{label.users}"><a href="#">Home</a></li>
+						<li th:text="${pageHeader}"><a>Extra Pages</a></li>
+					</ol>
+				</div>
+				<div class="col-lg-2"></div>
+			</div>
+			<div class="wrapper wrapper-content">
+				<div class="row animated fadeInRight">
+					<div class="col-md-6">
+						<div class="ibox float-e-margins">
+							<div class="ibox-title">
+								<h5 th:text="${pageHeader}">Пациенты</h5>
+								<div class="ibox-tools">
+									<a class="collapse-link"> <i class="fa fa-chevron-up"></i>
+									</a> <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+										
+									</a>
+								</div>
+							</div>
+
+							<div class="ibox-content">
+								<table th:id="${tableId}" class="table"></table>
+								<div class="user-button">
+									<div class="row">
+										<div class="col-lg-4">
+											<button type="button"
+												class="btn btn-primary btn-sm btn-block"
+												onclick="users.newUser()">
+												<i class="fa fa-id-card-o"></i><span class="t8px"
+													th:text="#{button.newPatient}"></span>
+											</button>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div th:replace="fragments/modal/usrEditForm :: usrEditForm"></div>
+					</div>
+				</div>
+			</div>
+			<div th:replace="fragments/footer :: footer"></div>
+		</div>
+	</div>
+
+	<div th:replace="fragments/modal/modal4 :: modal4"></div>
+	<div th:replace="fragments/modal/payment :: payment"></div>
+	
+	
+
+	<!-- Mainly scripts -->
+	<script src="js/jquery-3.1.1.min.js"
+		data-th-src="@{js/jquery-3.1.1.min.js}"></script>
+	<script src="js/bootstrap.min.js" data-th-src="@{js/bootstrap.min.js}"></script>
+	<script src="js/plugins/metisMenu/jquery.metisMenu.js"
+		data-th-src="@{js/plugins/metisMenu/jquery.metisMenu.js}"></script>
+	<script src="js/plugins/slimscroll/jquery.slimscroll.min.js"
+		data-th-src="@{js/plugins/slimscroll/jquery.slimscroll.min.js}"></script>
+
+	<!-- Custom and plugin javascript -->
+	<script src="js/inspinia.js" data-th-src="@{js/inspinia.js}"></script>
+	<script src="js/plugins/pace/pace.min.js"
+		data-th-src="@{js/plugins/pace/pace.min.js}"></script>
+
+	<!-- Peity -->
+	<script src="js/plugins/peity/jquery.peity.min.js"
+		data-th-src="@{js/plugins/peity/jquery.peity.min.js}"></script>
+	<script src="js/demo/peity-demo.js"
+		data-th-src="@{js/demo/peity-demo.js}"></script>
+
+	<!-- Jasny -->
+	<script src="js/plugins/jasny/jasny-bootstrap.min.js"
+		data-th-src="@{js/plugins/jasny/jasny-bootstrap.min.js}"></script>
+
+	<!-- DROPZONE -->
+	<script src="js/plugins/dropzone/dropzone.js"
+		data-th-src="@{js/plugins/dropzone/dropzone.js}"></script>
+
+	<!-- CodeMirror -->
+	<script src="js/plugins/codemirror/codemirror.js"
+		data-th-src="@{js/plugins/codemirror/codemirror.js}"></script>
+	<script src="js/plugins/codemirror/mode/xml/xml.js"
+		data-th-src="@{js/plugins/codemirror/mode/xml/xml.js}"></script>
+
+
+	<script src="js/knockout/knockout.js"
+		data-th-src="@{js/knockout/knockout.js}"></script>
+	<!-- Toastr -->
+	<script src="js/plugins/toastr/toastr.min.js"
+		data-th-src="@{js/plugins/toastr/toastr.min.js}"></script>
+
+	<script src="js/datatables.min.js"
+		data-th-src="@{js/datatables.min.js}"></script>
+	<script src="js/plugins/validate/jquery.validate.min.js"
+		data-th-src="@{js/plugins/validate/jquery.validate.min.js}"></script>
+	<script src="js/plugins/validate/additional-methods.min.js"
+		data-th-src="@{js/plugins/validate/additional-methods.min.js}"></script>
+	<script src="js/plugins/validate/localization/messages_ru.min.js"
+		data-th-src="@{js/plugins/validate/localization/messages_ru.min.js}"></script>
+
+	<script src="js/core.js" data-th-src="@{js/core.js}"></script>
+	<script src="js/users.js" data-th-src="@{js/users.js}"></script>
+
+	<div th:replace="fragments/vars :: vars"></div>
+
+
+</body>
+
+</html>

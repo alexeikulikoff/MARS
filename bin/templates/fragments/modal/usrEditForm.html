@@ -1,0 +1,188 @@
+<div th:fragment="usrEditForm" id="usrEditForm" class="ibox float-e-margins">
+
+	<div class="ibox-title">
+		<h5 th:text="#{label.userProfile}">Пациенты</h5>
+		<div class="ibox-tools">
+			<a class="collapse-link"> <i class="fa fa-chevron-up"></i>
+			</a> <a class="dropdown-toggle" data-toggle="dropdown" href="#"> 
+			</a>
+		</div>
+	</div>
+	<div class="ibox-content">
+		<div class="row">
+			<ul class="list-group">
+				<li class="list-group-item">
+				<strong
+					th:text="${profileType} +': '">Пациент:</strong> <span id="nUserTitleID" th:text="${userFullName}"></span></li>
+			</ul>
+		</div>
+		<div class="ibox float-e-margins">
+			<div class="tabs-container">
+
+				<ul class="nav nav-tabs">
+					<li id="li-tab3" class="active"><a data-toggle="tab" href="#tab-3"> <i
+							class="fa fa-drivers-license-o"></i></a></li>
+<!-- 							
+					<li id="li-tab4" class=""><a data-toggle="tab" href="#tab-4"><i
+							class="fa fa-rouble"></i></a></li>
+ -->							
+				
+				</ul>
+
+				<div class="tab-content">
+					<div id="tab-3" class="tab-pane active">
+						<div class="ibox-content">
+				
+							<div class="row">
+								<div class="col-sm-6 b-r">
+									<form role="form" id="profileEditForm">
+										<div class="form-group">
+											<label class="control-label" th:text="#{profile.surname}">Surname</label>
+
+											<input id="_surname" name="_surname" type="text"
+												class="form-control" th:required="required" />
+
+										</div>
+										<div class="form-group">
+											<label class="control-label" th:text="#{profile.firstname}">FirstName</label>
+
+											<input id="_firstname" name="firstname" type="text"
+												class="form-control" th:required="required" />
+
+										</div>
+										<div class="form-group">
+											<label class="control-label" th:text="#{profile.lastname}">lastName</label>
+
+											<input id="_lastname" name="lastname" type="text"
+												class="form-control" th:required="required" />
+
+										</div>
+										<div id="mailGroup" class="form-group">
+											<label class="control-label" th:text="#{profile.email}">Email</label>
+
+											<input id="_email" name="email" type="text"
+												class="form-control" th:required="required" />
+
+										</div>
+
+										<div class="form-group">
+											<label class="control-label" th:text="#{profile.password}">Password</label>
+
+											<input id="_passwd" name="passwd" type="text"
+												class="form-control" th:required="required" />
+
+										</div>
+										<input id="_id" type="hidden" class="form-control" />
+									</form>
+								</div>
+								<div class="col-sm-6">
+									<form class="form-horizontal" action="" id="formContent"
+										method="post" enctype="multipart/form-data">
+
+										<p th:text="#{profile.pageInfo1}">You can create an
+											account:</p>
+										<div id="imgUserContaiter" class="ibox-content">
+											<div class="but1">
+												<img id="userImage" class="img-responsive" width="200" /> <label
+													id="removeImageBtn"
+													class="btn  btn-floating btn-primary hidden" type="button"
+													data-toggle="tooltip" data-placement="right"
+													th:title="#{button.removePic}"><i
+													class="fa fa-trash"></i> </label> <label for="upload"
+													id="btnAddUserImage" type="button"
+													class="btn btn-floating btn-primary hidden"
+													data-placement="right" th:title="#{button.addPic}"
+													th:disabled="disabled"><i class="fa fa-camera"></i>
+												</label> <input type="file" id="upload" style="display: none"
+													th:disabled="disabled"
+													oninput="core.uploadTempImage(this.value,'formContent','upload','userImage')" />
+
+											</div>
+										</div>
+
+									</form>
+
+								</div>
+							</div>
+							<div>
+								<p>
+								<hr />
+								</p>
+							</div>
+							<div class="pull-right">
+								<p>
+									<button id="btnSaveUsers" type="button"
+										class="btn btn-primary btn-sm" onclick="core.saveUser()"
+										th:text="#{button.upload}" th:disabled="disabled"></button>
+									<button id="btnDropUsers" type="button"
+										class="btn btn-danger btn-sm" onclick="users.dropUser()"
+										th:text="#{button.drop}" th:disabled="disabled"></button>
+									<button id="btnCancel" type="button"
+										class="btn btn-warning btn-sm"
+										onclick="users.saveDropCancel()" th:text="#{button.cancel}"
+										th:disabled="disabled"></button>
+								</p>
+							</div>
+						</div>
+
+					</div>
+
+<!-- 
+				<div id="tab-4" class="tab-pane">
+						<div  class="ibox-content">
+						<div id="tab-4-content">
+						    <div class="row">
+						      <div class="col-sm-8">
+						         <input id="paymentCommentsId" class="form-control"
+											th:placeholder="#{label.comments}" type="text"/>
+						      </div>
+						    </div>
+							<div class="row">
+								<div class="col-sm-2">
+									<div class="input-group">
+										<input id="paymentSumId" class="form-control"
+											th:placeholder="#{label.sum}" type="text"/>
+										
+									</div>
+								</div>
+								<div class="col-sm-3">
+									<div class="input-group">
+									  <select id="paymentPeriodID" class="form-control m-b" name="paymentPeriod">
+                                        <option value="1">1 Месяц</option>
+                                        <option value="3">3 Месяца </option>
+                                        <option value="12">Год</option>
+                                        
+                                    </select>
+									</div>			
+								</div>
+								<div class="col-sm-3">
+									<button id="btnAddPayment" class="btn btn-primary" data-toggle="modal" data-target="#payment">
+										<i class="fa fa-rouble"></i><span style="padding-left: 5px;" th:text="#{button.addPayment}">Сохранить</span>
+									</button>
+								</div>
+							</div>
+						 </div>	
+							<div class="row">
+								<div id="tablePaymentsContainer"  class="col-sm-12">
+									<table id="tablePayments" class="table"></table>
+								</div>
+							</div>
+
+							<input type="hidden" id="ProfileuserID" th:value="${ProfileuserID}"/>
+							<input type="hidden" id="userRole" th:value="${userRole}"/>
+						</div>
+
+					</div>
+-->					
+					
+				
+					<input type="hidden" id="ProfileuserID" th:value="${ProfileuserID}"/>
+					<input type="hidden" id="userRole" th:value="${userRole}"/>
+				
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+

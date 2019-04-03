@@ -1,0 +1,62 @@
+mars: 
+    mail_smtp_host: 172.16.28.82
+    mail_port: 25
+    mail_from: noreply@ldc.ru
+    mail_confirm_period: 300
+    storage_path: /home/admin2/storage/DICOM
+    serialized_path: /home/admin2/storage/SER 
+    hadoop_user: hadoop
+    hadoop_dicom_path: /user/PPP/DICOM
+    hadoop_ser_path: /user/PPP/SER
+    hadoop_con_path: /user/PPP/CON
+spring:      
+    mvc:
+          favicon:
+             enabled : true
+    main: 
+          banner-mode: "off"
+    thymeleaf: 
+          cache: false
+    redis:
+          host : localhost
+          port : 6379
+    datasource:
+          platform: postgres
+          driverClassName: org.postgresql.Driver
+          driver-class-name: org.postgresql.Driver
+          url: jdbc:postgresql://127.0.0.1:5432/springbootdb
+          username: postgres
+          password: postgres
+    jpa:
+          database: POSTGRESQL         
+          show-sql: false
+          properties: 
+                hibernate:
+                    dialect: org.hibernate.dialect.PostgreSQLDialect
+    http:
+          multipart:
+                max-file-size : 500MB
+                max-request-size: 500MB
+                file-size-threshold : 50MB 
+                location : /home/admin2/github/MARS/temp
+                resolve-lazily : true                                    
+logging:
+    file: /var/log/mibs-mars.log     
+security:
+        require-ssl: true 
+server:  
+    connection-timeout: -1 
+    context-path: /mars
+    address: 172.16.30.49        
+    port: 443
+    ssl:
+        key-store-type: PKCS12
+        key-store: /home/admin2/github/MARS/keystore.p12
+        key-store-password: 456852
+        key-alias: tomcat
+
+          
+  
+    
+
+

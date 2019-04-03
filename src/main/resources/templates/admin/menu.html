@@ -1,0 +1,49 @@
+<menu-page th:fragment="menu">
+<nav class="navbar-default navbar-static-side" role="navigation">
+	<div class="sidebar-collapse">
+		<ul class="nav metismenu" id="side-menu">
+			<li class="nav-header">
+				<div class="dropdown profile-element text-center">
+					<span> <img id="topProfImg" width="50" height="50"
+						class="img-circle"
+						th:src="${image}? @{'data:image/jpeg;base64,'+${image}} : @{img/mibs-empty-profile.jpg}" />
+					</span> <a data-toggle="dropdown" class="dropdown-toggle" href="#"> <span
+						class="clear"> <span class="block m-t-xs"> <strong
+								class="font-bold"><span
+									th:text="${surname} + ' ' + ${firstname}"> David
+										Williams</span></strong>
+						</span> <span class="text-muted text-xs block"><span
+								th:text="#{label.cabinet}">Art Director</span> </span>
+					</span>
+					</a>
+					
+				</div>
+				<div class="logo-element">IN+</div>
+			</li>
+			<li><a href="dashboard"><i class="fa fa-dashboard"></i> <span
+					class="nav-label" th:text="#{label.dashboard}">Dashboard</span></a></li>
+		
+			<li class="active"><a href="patients"><i
+					class="fa fa-th-large"></i> <span class="nav-label" th:text="#{label.users}">Users</span>
+					<span class="fa arrow"></span></a>
+				<ul class="nav nav-second-level">
+					<li class="active"><a href="patients" th:text="#{label.patients}">Patients</a></li>
+					<li><a href="doctors" th:text="#{label.docs}">Docs</a></li>
+					<li><a href="admins"  th:text="#{label.admins}">Admins</a></li>
+					
+				</ul></li>
+
+			<li><a href="profile"><i class="fa fa-address-card-o"></i> <span
+					class="nav-label" th:text="#{label.userProfile}">Profile</span></a></li>
+		
+			<li><a href="explorations"><i class="fa fa-stethoscope"></i>
+					<span class="nav-label" th:text="#{label.explorations}">Explorations</span></a></li>
+		
+			<li><a href="settings"><i class="fa fa-gear"></i> <span
+					class="nav-label" th:text="#{label.settings}">Settings</span></a></li>
+
+		</ul>
+
+	</div>
+</nav>
+</menu-page>

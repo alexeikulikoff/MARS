@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<data>
+	<connectionString>jdbc:sqlserver://172.16.30.125;databaseName=StorageService;user=sa;password=skom</connectionString>
+	<serviceAddress>http://storage.mcomtech.ru/Service/</serviceAddress>
+	<email>Kuznetsova@gmail.com</email>
+	<first>Антонина</first>
+	<parent>Ивановна</parent>
+	<family>Кузнецова</family>
+	<uid>001-003-19111300</uid>
+	<studyName>Очень важное исследование</studyName>
+	<path>\\\\172.16.28.125\\D$\\Users\\Public\\Doctor\\studies\\</path>
+	<isPaid>true</isPaid>
+	<code>2</code>
+	<count>500</count>
+	<sumUnit>RUB</sumUnit>
+	<date>01.06.2014 12:00:00</date>
+</data>

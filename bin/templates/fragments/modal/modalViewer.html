@@ -1,0 +1,49 @@
+<div th:fragment="modalViewer" id="modalViewer"
+	class="modal inmodal modal-nooverfloyY" tabindex="-1" role="dialog"
+	aria-hidden="true">
+	<div id="mainModalDialog" class="modal-dialog modal-dialog-wide">
+		<div class="modal-content animated fadeIn">
+			<div class="modal-header modal-header-narrow">
+				<p>
+					<span id="hdinfo" class="pull-left">hh</span>
+					<button id="closeDocom" type="button" class="close"
+						data-dismiss="modal">
+						<span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+					</button>
+				</p>
+			</div>
+			<div class="modal-body">
+				<div class="row">
+					<div class="col-md-3 col-xs-3">
+						<table id="dicomSeriesTable" class="table"></table>
+					</div>
+					<div id="imageFrame" class="col-md-9 col-xs-9">
+						<p>
+							<a id="canselRuler" class="btn btn-white btn-bitbucket"> <i
+								class="fa fa-paper-plane-o" data-fa-transform="rotate-180"></i>
+							</a> <a id="rulerBtn" class="btn btn-white btn-bitbucket"> <i
+								class="fa fa-magic"></i>
+							</a> <a id="ZoomPlus" class="btn btn-white btn-bitbucket"> <i
+								class="fa fa-plus"></i>
+							</a> <a id="ZoomMinus" class="btn btn-white btn-bitbucket"> <i
+								class="fa fa-minus"></i>
+							</a> <a id="ZoomDefault" class="btn btn-white btn-bitbucket"> <i
+								class="fa fa-dot-circle-o"></i>
+							</a>
+							<button id="btnDownloadDicom" class="btn btn-primary pull-right"
+								th:text="#{label.downloadExploration}">Upload</button>
+						</p>
+						<!--                         
+						<div id="dicomViewer1">
+							<img id="DicomImage1" width="100%" height="100%"></img>
+						</div>
+ -->
+						<div id="canvasDiv"></div>
+
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+

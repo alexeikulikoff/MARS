@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html>
+
+	 <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title th:text="#{profile.title}">INSPINIA | Profile</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet"  data-th-href="@{css/bootstrap.min.css}"/>
+    <link href="font-awesome/css/font-awesome.css" rel="stylesheet" data-th-href="@{font-awesome/css/font-awesome.css}"/>
+      <!-- Toastr style -->
+    <link href="css/plugins/toastr/toastr.min.css" rel="stylesheet" data-th-href="@{css/plugins/toastr/toastr.min.css}"/>
+    
+    <link href="css/animate.css" rel="stylesheet" data-th-href="@{css/animate.css}"/>
+    
+    <link href="css/plugins/dropzone/basic.css" rel="stylesheet" data-th-href="@{css/plugins/dropzone/basic.css}"/>
+    <link href="css/plugins/dropzone/dropzone.css" rel="stylesheet" data-th-href="@{css/plugins/dropzone/dropzone.css}"/>
+    <link href="css/plugins/jasny/jasny-bootstrap.min.css" rel="stylesheet" data-th-href="@{css/plugins/jasny/jasny-bootstrap.min.css}"/>
+    <link href="css/plugins/codemirror/codemirror.css" rel="stylesheet" data-th-href="@{css/plugins/codemirror/codemirror.css}"/>
+    
+    <link href="css/style.css" rel="stylesheet" data-th-href="@{css/style.css}"/>
+    <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon" data-th-href="@{img/favicon.ico}"/>
+
+<body id="body">
+  	<div id="wait_dialog" class="alert alert-success wait-dialog hidden" role="alert">
+    <!-- 	<img class="image-rotate" src="src/img/rotate.gif" width="50" height="50"  />   -->
+    		<div class="sk-spinner sk-spinner-cube-grid">
+				<div class="sk-cube"></div>
+				<div class="sk-cube"></div>
+				<div class="sk-cube"></div>
+				<div class="sk-cube"></div>
+				<div class="sk-cube"></div>
+				<div class="sk-cube"></div>
+				<div class="sk-cube"></div>
+				<div class="sk-cube"></div>
+				<div class="sk-cube"></div>
+			</div>
+	    <div class="text-center">	
+    	 	<span  th:text="#{message.pleaseWait}">Please wait</span>
+     	</div>	
+	</div>	
+    
+    <div id="wrapper">
+
+    <nav class="navbar-default navbar-static-side" role="navigation">
+        <div class="sidebar-collapse">
+            <ul class="nav metismenu" id="side-menu">
+                <li class="nav-header">
+                    <div class="dropdown profile-element"> <span>
+                            
+                              <img id="topProfImg" width="50" height="50" class="img-circle" th:src="${image}? @{'data:image/jpeg;base64,'+${image}} : @{img/mibs-empty-profile.jpg}" />
+                             </span>
+                        <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+                            <span class="clear"> <span class="block m-t-xs"> <strong class="font-bold"><span th:text="${surname} + ' ' + ${firstname}"> David Williams</span></strong>
+                             </span> <span class="text-muted text-xs block"><span  th:text="#{label.cabinet}">Art Director</span> <b class="caret"></b></span> </span> </a>
+                        <ul class="dropdown-menu animated fadeInRight m-t-xs">
+                            <li><a href="profile">Profile</a></li>
+                            <li><a href="contacts.html">Contacts</a></li>
+                            <li><a href="mailbox.html">Mailbox</a></li>
+                            <li class="divider"></li>
+                            <li><a href="login.html">Logout</a></li>
+                        </ul>
+                    </div>
+                    <div class="logo-element">
+                        IN+
+                    </div>
+                </li>
+				 <li>
+				   <a href="index.html"><i class="fa fa-th-large"></i> <span class="nav-label">Dashboards</span> <span class="fa arrow"></span></a>
+				       <ul class="nav nav-second-level collapse">
+				         <li><a href="index.html">Dashboard v.1</a></li>
+				         <li><a href="dashboard_2.html">Dashboard v.2</a></li>
+				         <li><a href="dashboard_3.html">Dashboard v.3</a></li>
+				         <li><a href="dashboard_4_1.html">Dashboard v.4</a></li>
+				        <li><a href="dashboard_5.html">Dashboard v.5 </a></li>
+				      </ul>
+				  </li>
+				  <li>
+				     <a href="layouts.html"><i class="fa fa-diamond"></i> <span class="nav-label">Layouts</span></a>
+				  </li>
+				  <li>
+				    <a href="metrics.html"><i class="fa fa-pie-chart"></i> <span class="nav-label">Metrics</span>  </a>
+				 </li>
+				 <li>
+				    <a href="widgets.html"><i class="fa fa-flask"></i> <span class="nav-label">Widgets</span></a>
+				 </li>
+            </ul>
+
+        </div>
+    </nav>
+
+        <div id="page-wrapper" class="gray-bg">
+        <div class="row border-bottom">
+        <nav class="navbar navbar-static-top" role="navigation" style="margin-bottom: 0">
+        <div class="navbar-header">
+            <a class="navbar-minimalize minimalize-styl-2 btn btn-primary " href="#"><i class="fa fa-bars"></i> </a>
+            <form role="search" class="navbar-form-custom" action="search_results.html">
+                <div class="form-group">
+                    <input type="text" placeholder="Search for something..." class="form-control" name="top-search" id="top-search"/>
+                </div>
+            </form>
+        </div>
+            <ul class="nav navbar-top-links navbar-right">
+                <li>
+                    <span class="m-r-sm text-muted welcome-message">Welcome to INSPINIA+ Admin Theme.</span>
+                </li>
+                <li class="dropdown">
+                    <a class="dropdown-toggle count-info" data-toggle="dropdown" href="#">
+                        <i class="fa fa-envelope"></i>  <span class="label label-warning">16</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-messages">
+                        <li>
+                            <div class="dropdown-messages-box">
+                                <a href="profile.html" class="pull-left">
+                                    <img alt="image" class="img-circle" src="img/a7.jpg"/>
+                                </a>
+                                <div class="media-body">
+                                    <small class="pull-right">46h ago</small>
+                                    <strong>Mike Loreipsum</strong> started following <strong>Monica Smith</strong>. <br/>
+                                    <small class="text-muted">3 days ago at 7:58 pm - 10.06.2014</small>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <div class="dropdown-messages-box">
+                                <a href="profile.html" class="pull-left">
+                                    <img alt="image" class="img-circle" src="img/a4.jpg"/>
+                                </a>
+                                <div class="media-body ">
+                                    <small class="pull-right text-navy">5h ago</small>
+                                    <strong>Chris Johnatan Overtunk</strong> started following <strong>Monica Smith</strong>. <br/>
+                                    <small class="text-muted">Yesterday 1:21 pm - 11.06.2014</small>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <div class="dropdown-messages-box">
+                                <a href="profile.html" class="pull-left">
+                                    <img alt="image" class="img-circle" src="img/profile.jpg"/>
+                                </a>
+                                <div class="media-body ">
+                                    <small class="pull-right">23h ago</small>
+                                    <strong>Monica Smith</strong> love <strong>Kim Smith</strong>. <br/>
+                                    <small class="text-muted">2 days ago at 2:30 am - 11.06.2014</small>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <div class="text-center link-block">
+                                <a href="mailbox.html">
+                                    <i class="fa fa-envelope"></i> <strong>Read All Messages</strong>
+                                </a>
+                            </div>
+                        </li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a class="dropdown-toggle count-info" data-toggle="dropdown" href="#">
+                        <i class="fa fa-bell"></i>  <span class="label label-primary">8</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-alerts">
+                        <li>
+                            <a href="mailbox.html">
+                                <div>
+                                    <i class="fa fa-envelope fa-fw"></i> You have 16 messages
+                                    <span class="pull-right text-muted small">4 minutes ago</span>
+                                </div>
+                            </a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a href="profile.html">
+                                <div>
+                                    <i class="fa fa-twitter fa-fw"></i> 3 New Followers
+                                    <span class="pull-right text-muted small">12 minutes ago</span>
+                                </div>
+                            </a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a href="grid_options.html">
+                                <div>
+                                    <i class="fa fa-upload fa-fw"></i> Server Rebooted
+                                    <span class="pull-right text-muted small">4 minutes ago</span>
+                                </div>
+                            </a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <div class="text-center link-block">
+                                <a href="notifications.html">
+                                    <strong>See All Alerts</strong>
+                                    <i class="fa fa-angle-right"></i>
+                                </a>
+                            </div>
+                        </li>
+                    </ul>
+                </li>
+
+
+                <li>
+                    <a href="login.html">
+                        <i class="fa fa-sign-out"></i> Log out
+                    </a>
+                </li>
+            </ul>
+
+        </nav>
+        </div>
+            <div class="row wrapper border-bottom white-bg page-heading">
+                <div class="col-lg-10">
+                    <h2>Profile</h2>
+                    <ol class="breadcrumb">
+                        <li>
+                            <a href="index.html">Home</a>
+                        </li>
+                        <li>
+                            <a>Extra Pages</a>
+                        </li>
+                        <li class="active">
+                            <strong>Profile</strong>
+                        </li>
+                    </ol>
+                </div>
+                <div class="col-lg-2">
+
+                </div>
+            </div>
+        <div class="wrapper wrapper-content">
+            <div class="row animated fadeInRight">
+           		<div class="col-md-4">
+               		  <div class="ibox float-e-margins">
+                        <div class="ibox-title">
+                            <h5 th:text="#{profile.myphoto}">Photo</h5>
+                            <div class="ibox-tools">
+                                <a class="collapse-link">
+                                    <i class="fa fa-chevron-up"></i>
+                                </a>
+                              
+                                
+                                <a class="close-link">
+                                    <i class="fa fa-times"></i>
+                                </a>
+                            </div>
+                        </div>
+                  
+                       <div  id="imgContaiter" class="ibox-content">
+                         <div class="but1">
+	                         <img id="profilImage" class="img-responsive"   th:src="${image}? @{'data:image/jpeg;base64,'+${image}} : @{img/mibs-empty-profile.jpg}" />
+	                         <a id="doRemove" class="btn btn-floating  btn-floating btn-primary" type="button" data-toggle="tooltip" data-placement="right" th:title="#{button.removePic}"><i class="fa fa-trash"></i></a>
+	                         <a id="addImage" type="button" class="btn btn-floating btn-primary" data-target="#myModal4" data-toggle="modal" data-placement="right" th:title="#{button.addPic}"><i class="fa fa-camera"></i></a>
+	                     </div>    
+                       </div>
+               
+                     <div class="ibox-content profile-content">
+                       <h4  th:text="${surname} + ' ' + ${firstname} + ' ' + ${lastname} ">FIO</h4>	
+                       <p><i class="fa fa-map-marker"></i><span class="t8px">Возраст 22 года</span> </p>	
+                       <h5 >Личный кабинет</h5>
+                       <p>С помощью личного кабинета вы можете хранить проведенные исследования в электронном виде, получать консультации врачей в режиме on-line. </p>
+                       <div class="row m-t-lg">
+                         <div class="col-md-4">
+                         	<span class="bar" style="display: none;">5,3,9,6,5,9,7,3,5,2</span>
+                             <p><strong>5</strong>  Исследований</p>
+                         </div>
+                           <div class="col-md-4">
+                             <span class="line" style="display: none;">5,3,9,6,5,9,7,3,5,2</span>
+                              <p><strong>4</strong>  Консультации</p>
+                           </div>
+                           <div class="col-md-4">
+                          		 <span class="bar" style="display: none;">5,3,2,-1,-3,-2,2,3,5,2</span>
+                          		 <p><strong>4</strong>  Приглашения</p>
+                           </div>
+                       </div>
+                      <div class="user-button">
+                        <div class="row">
+                          <div class="col-md-6">
+                            <button type="button" class="btn btn-primary btn-sm btn-block"><i class="fa fa-envelope"></i><span class="t8px"  th:text="#{button.sendMessage}"></span></button>
+                          </div>
+                          <div class="col-md-6">
+                            <button type="button" class="btn btn-default btn-sm btn-block"><i class="fa fa-coffee"></i><span class="t8px"  th:text="#{label.newContact}"></span></button>
+                          </div>
+                         </div>
+                       </div>               
+                    </div>		
+                   </div>    
+				</div>
+               	<div class="col-md-5">
+               		  <div class="ibox float-e-margins">
+                        <div class="ibox-title">
+                            <h5 th:text="#{profile.mylogin}">Myprofile</h5>
+                            <div class="ibox-tools">
+                                <a class="collapse-link">
+                                    <i class="fa fa-chevron-up"></i>
+                                </a>
+                              
+                                
+                                <a class="close-link">
+                                    <i class="fa fa-times"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="ibox-content">
+                            <form class="form-horizontal">
+                                <input  id="profileid"  type="hidden" th:value="${id}"/> 
+                                <div class="form-group"><label class="col-lg-4 control-label" th:text="#{profile.email}">Email</label>
+                                    <div class="col-lg-6">
+                                       <div class="input-group"><input th:value="${email}" id="email" type="text" class="form-control" name="email" disabled="disabled"/>
+                                         <span id="editSpan" class="input-group-btn"> 
+                                           	<button id="editEmail" type="button" class="btn btn-primary" data-toggle="tooltip" data-placement="right" title="Редактировать">
+                                           		<i class="fa fa-edit"></i>
+                                        	</button> 
+                                         </span>
+                                         <span id="saveSpan" class="input-group-btn hidden"> 
+                                           	<button id="saveEmail" type="button" class="btn btn-primary" data-toggle="tooltip" data-placement="right" title="Сохранить">
+                                           		<i class="fa fa-save"></i>
+                                        	</button> 
+                                        </span>
+                                       </div>
+                                    </div>
+                                </div>
+                             
+                                 <div id="emailConfirmationBox" class="row m-t-mg col-md-offset-2">
+                                   <div class="col-md-8" style="padding-left: 5px;">
+                                 	 <div class="alert alert-danger">
+                                		Внимание! Email не подтвержден.
+                            		 </div>
+                            		</div> 
+                            	  <div class="col-md-4">
+                            		 <button data-toggle="modal" type="button" class="btn btn-primary btn-sm" href="#myModal6">
+                            		 	<i class="fa fa-envelope"></i>
+                            		 	<span th:text="#{mail.confirm}">Confirm</span>
+                            		 </button>
+                            	 </div>
+                            	</div>	
+                            </form>
+                      
+                      	   <form id="changePasswordButton" class="form-horizontal">
+                      	      <div class="form-group">
+                                  <div class="col-md-4 col-md-offset-4">
+                            		 <button id="changePassword" data-toggle="modal" type="button" class="btn btn-primary btn-sm" >
+                            		 	<i class="fa fa-save"></i>
+                            		 	<span th:text="#{button.changePassword}">Change</span>
+                            		 </button>
+                            	  </div>	 
+                               </div>
+                      	   </form>
+                           <form id="changePasswordForm" class="form-horizontal">
+                              
+                                <div class="form-group"><label class="col-lg-4 control-label" th:text="#{profile.newPassword}">New password</label>
+                                    <div class="col-lg-6"><input th:value="${new_password1}" id="passwd1" type="password"  class="form-control" /></div>
+                                </div>
+                                <div class="form-group"><label class="col-lg-4 control-label" th:text="#{profile.newPassword2}">New Password</label>
+                                    <div class="col-lg-6"><input th:value="${new_password2}" id="old_password2"  type="password"  class="form-control"  /></div>
+                                </div>
+                                <div class="form-group">
+                                  <div class="col-md-4 col-md-offset-4">
+                            		 <button id="savePassword" data-toggle="modal" type="button" class="btn btn-primary btn-sm" >
+                            		 	<i class="fa fa-save"></i>
+                            		 	<span th:text="#{button.save}">Save</span>
+                            		 </button>
+                            	  </div>	 
+                               </div>
+                            </form>
+                        </div>
+                    </div>    
+</div>
+     <!--           	<div class="col-md-4">
+               		  <div class="ibox float-e-margins">
+                        <div class="ibox-title">
+                            <h5 th:text="#{profile.change-password}">ChangePassword</h5>
+                            <div class="ibox-tools">
+                                <a class="collapse-link">
+                                    <i class="fa fa-chevron-up"></i>
+                                </a>
+                                <a class="close-link">
+                                    <i class="fa fa-times"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="ibox-content">
+                            <form class="form-horizontal">
+                                <input  id="profileid"  type="hidden" th:value="${id}"/> 
+                                <div class="form-group"><label class="col-lg-6 control-label" th:text="#{profile.oldPassword}">OldPassword</label>
+                                    <div class="col-lg-4"><input th:value="${old_password}" id="old_password"  type="password"  class="form-control" /> 
+                                    </div>
+                                </div>
+                                <div class="form-group"><label class="col-lg-6 control-label" th:text="#{profile.newPassword}">New password</label>
+                                    <div class="col-lg-4"><input th:value="${new_password1}" id="new_password1" type="password"  class="form-control" /></div>
+                                </div>
+                                <div class="form-group"><label class="col-lg-6 control-label" th:text="#{profile.newPassword2}">New Password</label>
+                                    <div class="col-lg-4"><input th:value="${new_password2}" id="old_password2"  type="password"  class="form-control"  /></div>
+                                </div>
+                                <div class="hr-line-dashed"></div>
+                         
+                            </form>
+                        </div>
+                    </div>    
+</div>
+               
+        -->
+            </div>
+        </div>
+        <div class="footer">
+            <div class="pull-right">
+                10GB of <strong>250GB</strong> Free.
+            </div>
+            <div>
+                <strong>Copyright</strong> Example Company &copy; 2014-2017
+            </div>
+        </div>
+
+        </div>
+        </div>
+
+		<div class="modal inmodal" id="myModal6" tabindex="-1" role="dialog" aria-hidden="true">
+			<div class="modal-dialog">
+              <div class="modal-content animated fadeIn">
+                <div class="modal-header">
+				  <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title">Внимание!</h4>
+                    <small class="font-bold">Подтверждение адреса электронной почты.</small>
+                 </div>
+                 <div class="modal-body">
+                 	<p th:text="#{mail.info}">info</p><br/>
+                 </div>
+                 <div class="modal-footer">
+                   <button type="button" class="btn btn-white" data-dismiss="modal">Нет</button>
+                   <button id="verifyMailYes" type="button" class="btn btn-primary" data-dismiss="modal">Да</button>
+                </div>
+             </div>
+          </div>
+        </div>
+  
+       <div class="modal inmodal" id="myModal4" tabindex="-1" role="dialog"  aria-hidden="true">
+         <div class="modal-dialog">
+           <div class="modal-content animated fadeIn">
+             <div class="modal-header">
+               <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span>
+                  <span class="sr-only">Close</span>
+               </button>
+               <i class="fa fa-file-image-o modal-icon"></i>
+               <h4 class="modal-title" th:text="#{label.takePhoto}">Take Photo</h4>
+               <small th:text="#{label.photoSize}">Lorem Ipsum is simply dummy text of the printing and typesetting industry.</small>
+            </div>
+            <div class="modal-body">
+              <form  class="form-horizontal" action="" id="formContent" method="post" enctype="multipart/form-data" >
+			    <div class="fileinput fileinput-new input-group" data-provides="fileinput">
+  			      <div class="form-control" data-trigger="fileinput">
+					<i class="glyphicon glyphicon-file fileinput-exists"></i>
+				    <span class="fileinput-filename"></span>
+				  </div>
+					<span class="input-group-addon btn btn-primary btn-file">
+						<span class="fileinput-new"     th:text="#{button.select}">Select file</span>
+						<span class="fileinput-exists"  th:text="#{button.change}">Change</span>
+						<input type="file" name="file"  id="upload" />
+					</span>
+				</div> 
+			</form>	
+           </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-white" data-dismiss="modal" th:text="#{button.close}">Close</button>
+                <button id="doUpload" type="button" class="btn btn-primary" th:text="#{button.upload}">Save changes</button>
+             </div>
+           </div>
+         </div>
+      </div>
+
+     
+        
+   <!-- Mainly scripts -->
+    <script src="js/jquery-3.1.1.min.js" data-th-src="@{js/jquery-3.1.1.min.js}"></script>
+    <script src="js/bootstrap.min.js" data-th-src="@{js/bootstrap.min.js}"></script>
+    <script src="js/plugins/metisMenu/jquery.metisMenu.js" data-th-src="@{js/plugins/metisMenu/jquery.metisMenu.js}"></script>
+    <script src="js/plugins/slimscroll/jquery.slimscroll.min.js" data-th-src="@{js/plugins/slimscroll/jquery.slimscroll.min.js}"></script>
+ 
+     <!-- Custom and plugin javascript -->
+    <script src="js/inspinia.js" data-th-src="@{js/inspinia.js}"></script>
+    <script src="js/plugins/pace/pace.min.js" data-th-src="@{js/plugins/pace/pace.min.js}"></script>
+
+    <!-- Peity -->
+    <script src="js/plugins/peity/jquery.peity.min.js" data-th-src="@{js/plugins/peity/jquery.peity.min.js}"></script>
+    <script src="js/demo/peity-demo.js" data-th-src="@{js/demo/peity-demo.js}"></script>
+   
+     <!-- Jasny -->
+    <script src="js/plugins/jasny/jasny-bootstrap.min.js" data-th-src="@{js/plugins/jasny/jasny-bootstrap.min.js}"></script>
+
+    <!-- DROPZONE -->
+    <script src="js/plugins/dropzone/dropzone.js"  data-th-src="@{js/plugins/dropzone/dropzone.js}"></script>
+
+    <!-- CodeMirror -->
+    <script src="js/plugins/codemirror/codemirror.js"  data-th-src="@{js/plugins/codemirror/codemirror.js}"></script>
+    <script src="js/plugins/codemirror/mode/xml/xml.js"  data-th-src="@{js/plugins/codemirror/mode/xml/xml.js}"></script>
+   
+   
+    <script src="js/knockout/knockout.js" data-th-src="@{js/knockout/knockout.js}"></script>
+      <!-- Toastr -->
+    <script src="js/plugins/toastr/toastr.min.js" data-th-src="@{js/plugins/toastr/toastr.min.js}"></script>
+    
+    <script src="js/core.js" data-th-src="@{js/core.js}"></script>
+    <script src="js/main.js" data-th-src="@{js/main.js}"></script>
+ 	
+ 	 <script th:inline="javascript" >
+	//<![CDATA[
+	
+	    var  $error = {},
+	   		 $success = {},
+	   		 $button = {};
+	    	
+		$error.updateImage		= [[#{error.updateImage}]]	;   
+		$error.engError 		= [[#{error.engError}]];
+		$error.network			= [[#{error.network}]];
+		$error.removeImage		= [[#{error.removeImage}]];
+		$error.imageSave		= [[#{error.imageSave}]];
+		$success.imageRemove	= [[#{success.imageRemove}]];
+		$success.imageSave		= [[#{success.imageSave}]];
+		
+		$button.removePic		= [[#{button.removePic}]];
+		$button.addPic			= [[#{button.addPic}]];
+		
+	           
+		//]]>	
+	</script>
+                      
+</body>
+
+</html>
