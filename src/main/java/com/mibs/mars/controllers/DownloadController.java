@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.UUID;
 
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +50,7 @@ import com.mibs.mars.repository.ImagesRepository;
 import com.mibs.mars.repository.UsersRepository;
 import com.mibs.mars.service.ExplorationUniqueName;
 import com.mibs.mars.utils.Dcm2Img;
+import com.mibs.mars.utils.DicomHandler;
 import com.mibs.mars.utils.MUtils;
 
 import net.lingala.zip4j.core.ZipFile;
@@ -183,14 +185,19 @@ public class DownloadController extends AbstractController{
 	    }
 
 	 }
-		@RequestMapping("/uploadExploration")
+	@RequestMapping("/uploadExploration")
 	public @ResponseBody QueryResult uploadExploration(@RequestParam("uploadDicom") MultipartFile uploadDicom,  @RequestParam("explorationName") String explorationName,  @RequestParam("userid") Long userid  ) {
 		
+		File testStorageDicomPath = new File(appConfig.getStoragePath());	
+		if (!testStorageDicomPath.exists()) {
+			logger.error("Error in configuration. Create directory: " + testStorageDicomPath);
+			return new QueryResult("ERROR_DICOM_SAVE");
+		}
 
-//		String UniqueName = "111111111-22222";
 		String UniqueName = new ExplorationUniqueName().getUniqueName();
 		
 		String dstPath = appConfig.getStoragePath() + "/" + UniqueName;
+		
 		File destDir = new File(dstPath);
 		if (!destDir.exists()) {
 			if (!destDir.mkdir()) {
@@ -199,32 +206,29 @@ public class DownloadController extends AbstractController{
 			}
 		}
 		String zip = dstPath + "/" + UniqueName + ".zip";
-		
-		try (FileOutputStream fs = new FileOutputStream(zip); 
-			InputStream dicomStream = uploadDicom.getInputStream()) {
-			int length;
-			byte[] buffer = new byte[1024];
-			while ((length = dicomStream.read(buffer)) != -1) {
-				fs.write(buffer, 0, length);
-			}
-		} catch (IOException e) {
-			logger.error("Error while copying zip file:" + zip);
+		try {
+			FileUtils.copyInputStreamToFile(uploadDicom.getInputStream(), new File(zip));
+		} catch (IOException e3) {
+			logger.error("Error savint zip file to disk :" + zip);
 			return new QueryResult("ERROR_DICOM_SAVE");
 		}
-		ZipFile zipFile;
+		ZipFile zipFile = null;
 		try {
 			zipFile = new ZipFile(zip);
+			if (zipFile.isValidZipFile()) {
+				zipFile.extractAll(dstPath);
+				
+			}else {
+				logger.error("Error while opening zip file:" + zip);
+				return new QueryResult("ERROR_DICOM_SAVE");
+			}
 		} catch (ZipException e2) {
 			logger.error("Error while opening zip file:" + zip);
 			return new QueryResult("ERROR_DICOM_SAVE");
 		}
-		try {
-			zipFile.extractAll(dstPath);
-		} catch (ZipException e1) {
-			logger.error("Error while extracting zip files from :" + dstPath);
-			return new QueryResult("ERROR_DICOM_SAVE");
-		}
+	
 		Path unzippedPath = Paths.get(dstPath);
+	
 		File tempDir = new File(unzippedPath.toAbsolutePath() + "/temp");
 		if (!tempDir.exists()) {
 			if (!tempDir.mkdir()) {
@@ -259,42 +263,27 @@ public class DownloadController extends AbstractController{
 		}else {
 			savedExpl = exploration;
 		}
-	
 		try {
 			Thread.sleep(1000);
-		
 		} catch (InterruptedException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
 		}
+		File testStorageSerPath = new File(appConfig.getSerializedPath());	
+		if (!testStorageSerPath.exists()) {
+			logger.error("Error in configuration. Create directory: " + testStorageSerPath);
+			return new QueryResult("ERROR_DICOM_SAVE");
+		}
+		DicomHandler handler = new DicomHandler(UniqueName, appConfig.getSerializedPath(), appConfig.getStoragePath());
+		int parsed_n = 0;
+		parsed_n = handler.parsingDICOMFiles( savedExpl.getId(), imagesRepository  );
 		
-		String serPath = appConfig.getSerializedPath() + "/" + UniqueName;
-		Dcm2Img dcm2Img = new Dcm2Img();
-		dcm2Img.initImageWriter("JPEG", "jpeg", null, null, null);
-		//dcm2Img.initImageWriter("GIF", "gif", null, null, null);
 		try {
-			dcm2Img.CCCatch(tempDir.toString(), serPath, savedExpl, imagesRepository);
-		} catch (Exception e) {
-			
-			logger.error("Error while DICOM parsing!");
-			
-			explorationRepository.delete(savedExpl);
-			try {
-				deleteAll(unzippedPath);
-				deleteAll(Paths.get(serPath));
-			} catch (IOException e1) {
-				logger.error("Error while deleted all non DICOM files.");
-			}
-			return new QueryResult("ERROR_DICOM_SAVE");
-		}
-		try {
-			deleteFiles(unzippedPath);
+			deleteFiles( unzippedPath );
 		} catch (IOException e) {
-			logger.error("Error while deleting temp files from: " + unzippedPath.toAbsolutePath());
-			return new QueryResult("ERROR_DICOM_SAVE");
+			logger.error("Error while deleting files in: " + unzippedPath);
 		}
-		logger.info("Congratulations! ZIP file loaded successfully!" );
+		logger.info("Created " + parsed_n + " parsed dicom files." );
 		return new QueryResult("SUCCESS_DICOM_SAVE");
+		
 	}
 
 	private void deleteFiles(Path unzippedPath) throws IOException {

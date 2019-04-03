@@ -35,9 +35,9 @@ spring:
                     dialect: org.hibernate.dialect.PostgreSQLDialect
     http:
           multipart:
-                max-file-size : 500MB
-                max-request-size: 500MB
-                file-size-threshold : 50MB 
+                max-file-size : 4500MB
+                max-request-size: 4500MB
+                file-size-threshold : 150MB 
                 location : /home/admin2/github/MARS/temp
                 resolve-lazily : true                                    
 logging:
