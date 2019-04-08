@@ -41,20 +41,29 @@ public class DicomHandler extends AbstractDicomHandler implements Transformable 
 	public DicomHandler(String dicomName, String serializePath, String dicomPath ) {
 		super(dicomName,serializePath,dicomPath);
 	}
-
-	private int copyFiles(String path, SmbFile[] files) throws IOException, InterruptedException {
-		for (SmbFile file : files) {
-			if (file.isDirectory()) {
-				copyFiles(path, file.listFiles());
-			} else {
-				SmbFile src = new SmbFile(file.getCanonicalPath());
-				InputStream input = src.getInputStream();
-				OutputStream output = new FileOutputStream(path + "/" + src.getName());
-				IOUtils.copy(input, output);
-				output.close();
-				input.close();
-				counter++;
-			}
+	 public DicomHandler( String dicomName, String serializePath, String dicomPath, String remoteSmbPath ) {
+		 super(dicomName,serializePath,dicomPath,remoteSmbPath);
+	 }
+	private int copyFiles(String path, SmbFile[] files, boolean recursion) throws IOException, InterruptedException {
+		if ((files != null) && (files.length > 0) ) {
+			for (SmbFile file : files) {
+				if (file.isDirectory()) {
+					recursion = true;
+					copyFiles(path, file.listFiles(),recursion);
+				} else {
+					
+					SmbFile src = new SmbFile(file.getCanonicalPath());
+					
+					InputStream input = src.getInputStream();
+					String dstFileName = (recursion) ?  path + "/DCM-" + counter + "-"  + src.getName() : path + "/" + src.getName();
+					OutputStream output = new FileOutputStream(dstFileName);
+					IOUtils.copy(input, output);
+					logger.info("Copy file " + src.getName()  + " ->  " + dstFileName );
+					output.close();
+					input.close();
+					counter++;
+				}
+			}	
 		}
 		return counter;
 	}
@@ -65,10 +74,10 @@ public class DicomHandler extends AbstractDicomHandler implements Transformable 
 		ExecutorService service = null;
 		try {
 			service = Executors.newSingleThreadExecutor();
-			Future<Integer> future = service.submit(() -> copyFiles(createLocalDir(dicomPath, dicomName), files));
+			Future<Integer> future = service.submit(() -> copyFiles(createLocalDir(dicomPath, dicomName), files, false));
 			result = future.get(timeout, TimeUnit.MINUTES);
 		} catch (Exception e) {
-			throw new ErrorTransferDICOMException("Error while file transfering!");
+			throw new ErrorTransferDICOMException("Error while transfering dicom files from remote!");
 
 		} finally {
 			if (service != null)
@@ -91,46 +100,46 @@ public class DicomHandler extends AbstractDicomHandler implements Transformable 
 				} catch (FileNotFoundException e1) {
 					logger.error("Error creating Local dir with message: " + e1.getMessage() );
 				}
-				String s = dicomPath + "/" + dicomName + "/temp"; 
+				String s = dicomPath + "/" + dicomName; 
 				File[] dicoms = new File(s).listFiles();
-				if ((dicoms == null) ){
-					logger.error("Error files to be parsed are not found for path " +  s);
-				}
-				for (File dicom : dicoms) {
-					
-					DicomInputStream dis = null;
-					try {
-						dis = new DicomInputStream(dicom);
-						Attributes attrs = dis.readDataset(-1, -1);
-						Integer instance = attrs.getInt(Tag.InstanceNumber, 0);
-						Integer seria = attrs.getInt(Tag.SeriesNumber, 0);
-						String imgFileName = serializePath + "/" + dicomName + "/" + seria + "-" + instance + "-img.jpg";
-						File imageFile = new File(imgFileName);
-						byte[] data = convert(dicom, imageFile);
-						if (data != null) {
-							createSerializedDicom(attrs, data);
-							try {
-								saveImageEntity(explorationid, new Long(instance), new Long(seria),imagesRepository);
-								counter++;
-							} catch (Exception e) {
-								logger.error("Error while saving image data : " + e.getMessage() + " for exploration id: " + explorationid);
+				if ((dicoms != null) && (dicoms.length > 0) ){
+					for (File dicom : dicoms) {
+						DicomInputStream dis = null;
+						try {
+							dis = new DicomInputStream(dicom);
+							Attributes attrs = dis.readDataset(-1, -1);
+							Integer instance = attrs.getInt(Tag.InstanceNumber, 0);
+							Integer seria = attrs.getInt(Tag.SeriesNumber, 0);
+							String imgFileName = serializePath + "/" + dicomName + "/" + seria + "-" + instance + "-img.jpg";
+							File imageFile = new File(imgFileName);
+							byte[] data = convert(dicom, imageFile);
+							if (data != null) {
+								createSerializedDicom(attrs, data);
+								try {
+									saveImageEntity(explorationid, new Long(instance), new Long(seria),imagesRepository);
+									counter++;
+								} catch (Exception e) {
+									logger.error("Error while saving image data : " + e.getMessage() + " for exploration id: " + explorationid);
+								}
+							}else {
+								logger.error("Error createing Serialized Dicom for " + serializePath);
 							}
-						}else {
-							logger.error("Error createing Serialized Dicom for " + serializePath);
-						}
-					} catch (IOException e) {
-						logger.error("Error reading temporary image file: " + e.getMessage());
-						continue;
-					} finally {
-						if (dis != null) {
-							try {
-								dis.close();
-							} catch (IOException e) {
-							   logger.error("Error while handling DicomInputStream : " + e.getMessage() );
-								continue;
+						} catch (IOException e) {
+							logger.error("Error reading temporary image file: " + e.getMessage());
+							continue;
+						} finally {
+							if (dis != null) {
+								try {
+									dis.close();
+								} catch (IOException e) {
+								   logger.error("Error while handling DicomInputStream : " + e.getMessage() );
+									continue;
+								}
 							}
 						}
 					}
+				}else {
+					logger.error("Error files to be parsed are not found for path " +  s);	
 				}
 				return counter;
 			});

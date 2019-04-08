@@ -43,12 +43,13 @@ abstract class AbstractDicomHandler {
 	 protected String dicomPath;
 	 protected final int timeout = 5;
 	 protected String dicomName;
+	 protected String remoteSmbPath;
 	 private int frame = 1;
 	 private String suffix;
 	 private ImageWriter imageWriter;
 	 private ImageWriteParam imageWriteParam;
 	 private static ResourceBundle rb = ResourceBundle.getBundle("messages");
-	// public static ResourceBundle cfg = ResourceBundle.getBundle("application");
+	 
 
 	
 	 private final ImageReader imageReader;
@@ -61,7 +62,11 @@ abstract class AbstractDicomHandler {
 			imageReader = ImageIO.getImageReadersByFormatName("DICOM").next();
 			initImageWriter("JPEG","jpeg", null, null,null);
 		}
-	 
+	 public AbstractDicomHandler( String dicomName, String serializePath, String dicomPath, String remoteSmbPath ) {
+		 this(dicomName,serializePath,dicomPath);
+		 this.remoteSmbPath = remoteSmbPath;
+		 
+	 }
 	 public void initImageWriter(String formatName, String suffix, String clazz, String compressionType, Number quality) {
 	        Iterator<ImageWriter> imageWriters = ImageIO.getImageWritersByFormatName(formatName);
 	        if (!imageWriters.hasNext()) throw new IllegalArgumentException( MessageFormat.format(rb.getString("formatNotSupported"), formatName));
@@ -196,8 +201,6 @@ abstract class AbstractDicomHandler {
 	}
 	protected static String createLocalDir(String path, String name) throws  FileNotFoundException {
 		String result = path + "/" + name;
-		System.out.println("createLocalDir=" + result);
-		
 		File destDir = new File( result );
 		if (!destDir.exists()) {
 			if (!destDir.mkdir()) throw new FileNotFoundException("Error: directory not created!");

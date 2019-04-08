@@ -8,6 +8,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -43,6 +44,7 @@ import com.mibs.mars.exception.ErrorCreateProfileException;
 import com.mibs.mars.exception.ErrorDicomParsingException;
 import com.mibs.mars.exception.FolderNotFoundException;
 import com.mibs.mars.exceptions.CabinetBuildException;
+import com.mibs.mars.exceptions.ErrorTransferDICOMException;
 import com.mibs.mars.repository.ConclusionRepository;
 import com.mibs.mars.repository.ExplorationRepository;
 import com.mibs.mars.repository.ExplorationShortRepository;
@@ -53,6 +55,8 @@ import com.mibs.mars.utils.Dcm2Img;
 import com.mibs.mars.utils.DicomHandler;
 import com.mibs.mars.utils.MUtils;
 
+import jcifs.smb.SmbException;
+import jcifs.smb.SmbFile;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 
@@ -106,25 +110,76 @@ public class DownloadController extends AbstractController{
 	    	return null;
 	    }
 	 }
+
 	 @RequestMapping(value = { "/saveExplorationViaNetwork" } ,method = {RequestMethod.POST})
-	 public @ResponseBody QueryResult saveExplorationViaNetwork(@RequestBody ExplorationNew explorationDAO ){
-		 
+	 public @ResponseBody QueryResult saveExplorationViaNetwork(@RequestBody ExplorationNew exp ){
+		
+		 if ((exp.getName().length()== 0 ) | (exp.getUsername().length()== 0 ) | (exp.getPassword().length() == 0 ) | (exp.getName().length() == 0) | (exp.getPath().length() == 0 ) | (exp.getUserid().length() == 0)) {
+			 return new QueryResult(ERROR_EXPLORATION_SAVE); 
+		 }
+		
 		 String uniqueID =  new ExplorationUniqueName().getUniqueName();
 		 Exploration exploration = new Exploration();
-		 exploration.setUsersId(Long.parseLong(explorationDAO.getUserid()));
+		 exploration.setUsersId(Long.parseLong(exp.getUserid()));
 		 exploration.setDate(regDate());
 		 exploration.setDicomname( uniqueID);
 		 exploration.setDicomSize(new Long(0));
-		 exploration.setExplname( explorationDAO.getName());
-		 exploration.setRemotepath( explorationDAO.getPath());
+		 exploration.setExplname( exp.getName());
+		 exploration.setRemotepath( exp.getPath());
 		 exploration.setUniqueid( uniqueID );
-		 Exploration savedExploration = explorationRepository.save(exploration) ;
-		 try {
-			buildCabinet( savedExploration, explorationDAO.getUsername(),explorationDAO.getPassword() );
+		 Exploration saved = explorationRepository.save(exploration) ;
+		 
+		 System.out.println(saved);
+		   // String remoteSmbPath = "smb://"  +exp.getUsername() + ":" + exp.getPassword() + "@" + exp.getPath();
+		    String remoteSmbPath = "smb://admin:admin@172.16.30.107/Public/CABTEST/";
+		    
+		  
+		    int transfered = 0;
+		    int parsed = 0;
+		    try {
+				SmbFile sfile =  new SmbFile( remoteSmbPath );
+				 try {
+					DicomHandler handler = new DicomHandler(uniqueID, appConfig.getSerializedPath(), appConfig.getStoragePath());
+					
+					try {
+						transfered = handler.transferDICOMFiles(sfile.listFiles()) ;
+						if (transfered > 0) {
+							parsed = handler.parsingDICOMFiles(saved.getId(), imagesRepository);
+							if (parsed == 0) {
+								 logger.error("Error transfering files. There is nothing to be parsed.");
+								 explorationRepository.delete(saved);
+								 return new QueryResult(ERROR_EXPLORATION_SAVE);	
+							}else {
+								String path = appConfig.getStoragePath() + "/" + uniqueID;
+								long size = pack( path, path + "/" + uniqueID + ".zip");
+								explorationRepository.updateDicomSize( size , saved.getId() );
+							}
+						}else {
+							 logger.error("Error transfering files. There is nothing to be parsed.");
+							 explorationRepository.delete(saved);
+							 return new QueryResult(ERROR_EXPLORATION_SAVE);
+						}
+					} catch (ErrorTransferDICOMException e) {
+						 e.printStackTrace();
+						 logger.error("Error Transfering  DICOM " + e.getMessage() );
+						 explorationRepository.delete(saved);
+						 return new QueryResult(ERROR_EXPLORATION_SAVE);
+					}
+					
+				 } catch (SmbException e) {
+					 e.printStackTrace();
+					 logger.error("Error SmbException " + e.getMessage() );
+					 explorationRepository.delete(saved);
+					 return new QueryResult(ERROR_EXPLORATION_SAVE);
+					 
+				}
+		    } catch (MalformedURLException e) {
+		    	e.printStackTrace();
+		    	logger.error("Error Malformed URL Exception " + e.getMessage() );
+		    	explorationRepository.delete(saved);
+				return new QueryResult(ERROR_EXPLORATION_SAVE);
+			}
 			return new QueryResult(SUCCESS_EXPLORATION_SAVE);
-		} catch (CabinetBuildException e) {
-			 return new QueryResult(ERROR_EXPLORATION_SAVE);
-		}
 	}
 	 
 	 
@@ -229,7 +284,7 @@ public class DownloadController extends AbstractController{
 	
 		Path unzippedPath = Paths.get(dstPath);
 	
-		File tempDir = new File(unzippedPath.toAbsolutePath() + "/temp");
+		File tempDir = new File(unzippedPath.toAbsolutePath().toString()) ;
 		if (!tempDir.exists()) {
 			if (!tempDir.mkdir()) {
 				logger.error("Error while creating directory  :" + tempDir);
