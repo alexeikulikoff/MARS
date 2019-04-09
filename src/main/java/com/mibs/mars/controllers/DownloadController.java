@@ -14,7 +14,11 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
+
+import javax.mail.MessagingException;
 
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
@@ -25,6 +29,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -38,6 +43,7 @@ import com.mibs.mars.config.AppConfig;
 import com.mibs.mars.dao.ExplorationNew;
 import com.mibs.mars.entity.Conclusion;
 import com.mibs.mars.entity.Exploration;
+import com.mibs.mars.entity.RemotePaths;
 import com.mibs.mars.entity.Users;
 import com.mibs.mars.exception.ErrorCopyFiles;
 import com.mibs.mars.exception.ErrorCreateProfileException;
@@ -45,12 +51,15 @@ import com.mibs.mars.exception.ErrorDicomParsingException;
 import com.mibs.mars.exception.FolderNotFoundException;
 import com.mibs.mars.exceptions.CabinetBuildException;
 import com.mibs.mars.exceptions.ErrorTransferDICOMException;
+import com.mibs.mars.exceptions.TransferDicomException;
+import com.mibs.mars.net.MailAgent;
 import com.mibs.mars.repository.ConclusionRepository;
 import com.mibs.mars.repository.ExplorationRepository;
 import com.mibs.mars.repository.ExplorationShortRepository;
 import com.mibs.mars.repository.ImagesRepository;
 import com.mibs.mars.repository.UsersRepository;
 import com.mibs.mars.service.ExplorationUniqueName;
+import com.mibs.mars.service.UsersDetails;
 import com.mibs.mars.utils.Dcm2Img;
 import com.mibs.mars.utils.DicomHandler;
 import com.mibs.mars.utils.MUtils;
@@ -66,7 +75,8 @@ import static com.mibs.mars.utils.Messages.*;
 import static com.mibs.mars.utils.MUtils.regDate;
 @Controller
 public class DownloadController extends AbstractController{
-	
+	private final String ADMIN_EMAIL = "storage@mcomtech.ru";
+	private Locale locale = Locale.getDefault();
 	static Logger logger = LoggerFactory.getLogger(DownloadController.class);
 	@Autowired
 	AppConfig appConfig;
@@ -117,7 +127,6 @@ public class DownloadController extends AbstractController{
 		 if ((exp.getName().length()== 0 ) | (exp.getUsername().length()== 0 ) | (exp.getPassword().length() == 0 ) | (exp.getName().length() == 0) | (exp.getPath().length() == 0 ) | (exp.getUserid().length() == 0)) {
 			 return new QueryResult(ERROR_EXPLORATION_SAVE); 
 		 }
-		
 		 String uniqueID =  new ExplorationUniqueName().getUniqueName();
 		 Exploration exploration = new Exploration();
 		 exploration.setUsersId(Long.parseLong(exp.getUserid()));
@@ -128,92 +137,99 @@ public class DownloadController extends AbstractController{
 		 exploration.setRemotepath( exp.getPath());
 		 exploration.setUniqueid( uniqueID );
 		 Exploration saved = explorationRepository.save(exploration) ;
+
+		 return buildCabinet2(exp, saved);
 		 
-		 System.out.println(saved);
-		   // String remoteSmbPath = "smb://"  +exp.getUsername() + ":" + exp.getPassword() + "@" + exp.getPath();
-		    String remoteSmbPath = "smb://admin:admin@172.16.30.107/Public/CABTEST/";
-		    
-		  
-		    int transfered = 0;
-		    int parsed = 0;
-		    try {
-				SmbFile sfile =  new SmbFile( remoteSmbPath );
-				 try {
-					DicomHandler handler = new DicomHandler(uniqueID, appConfig.getSerializedPath(), appConfig.getStoragePath());
-					
-					try {
-						transfered = handler.transferDICOMFiles(sfile.listFiles()) ;
-						if (transfered > 0) {
-							parsed = handler.parsingDICOMFiles(saved.getId(), imagesRepository);
-							if (parsed == 0) {
-								 logger.error("Error transfering files. There is nothing to be parsed.");
-								 explorationRepository.delete(saved);
-								 return new QueryResult(ERROR_EXPLORATION_SAVE);	
-							}else {
-								String path = appConfig.getStoragePath() + "/" + uniqueID;
-								long size = pack( path, path + "/" + uniqueID + ".zip");
-								explorationRepository.updateDicomSize( size , saved.getId() );
-							}
-						}else {
-							 logger.error("Error transfering files. There is nothing to be parsed.");
-							 explorationRepository.delete(saved);
-							 return new QueryResult(ERROR_EXPLORATION_SAVE);
-						}
-					} catch (ErrorTransferDICOMException e) {
-						 e.printStackTrace();
-						 logger.error("Error Transfering  DICOM " + e.getMessage() );
-						 explorationRepository.delete(saved);
-						 return new QueryResult(ERROR_EXPLORATION_SAVE);
-					}
-					
-				 } catch (SmbException e) {
-					 e.printStackTrace();
-					 logger.error("Error SmbException " + e.getMessage() );
-					 explorationRepository.delete(saved);
-					 return new QueryResult(ERROR_EXPLORATION_SAVE);
-					 
+	 	}
+		@RequestMapping(value = { "/loadExploration" },method = {RequestMethod.GET})
+		public @ResponseBody QueryResult  loadExploration( @RequestParam(value="id", required = true)  Long id  ) {
+			Exploration explorations = explorationRepository.findById( id );
+			if ( explorations == null  ) {
+				return new QueryResult( "ERROR_CABINET_BUILDING" );
+			}
+			if (explorations.getDicomSize() == 0) {
+				String UniqueID = explorations.getUniqueid(); 
+				String serDir  = appConfig.getSerializedPath() + "/" + UniqueID;
+				File seFile = new File(serDir);
+				if ( seFile.isDirectory()) {
+					deleteDir( seFile.toPath() );
+					logger.info("Directory " + serDir + " has been deleted." );
 				}
-		    } catch (MalformedURLException e) {
-		    	e.printStackTrace();
-		    	logger.error("Error Malformed URL Exception " + e.getMessage() );
-		    	explorationRepository.delete(saved);
-				return new QueryResult(ERROR_EXPLORATION_SAVE);
+				String dicomDir  = appConfig.getStoragePath() + "/" + UniqueID;
+				File deFile = new File(dicomDir);
+				if( deFile.isDirectory()) {
+					deleteDir( deFile.toPath() );
+					logger.info("Directory " + serDir + " has been deleted." );
+				}
+				if (explorations.getRemotepath().trim().length() > 0) {
+					String remotePath = explorations.getRemotepath().trim();
+					String s1 = remotePath.replaceAll("\\\\", "/");
+					Path path = Paths.get( s1 );
+					String ipAddress = path.getName(0).toString();
+					String dirName = path.getName(1).toString().toLowerCase();
+					RemotePaths remotePaths = remotePathsRepository.findByIpaddressAndDirnameIgnoreCase(ipAddress, dirName);
+					if (remotePaths == null) {
+						logger.error("Error! Remoute path is null!");
+						return new QueryResult( "ERROR_CABINET_BUILDING" );
+					}
+					ExplorationNew exp = new ExplorationNew();
+				    exp.setUsername( remotePaths.getLogin() );
+				    exp.setPassword( remotePaths.getPasswd() );
+				    exp.setPath( s1.startsWith("//") ? s1.substring(2) : s1);
+					return buildCabinet2(exp, explorations);
+				}else {
+					logger.error("Error! Exploration does not have remote path");
+					return new QueryResult( "ERROR_CABINET_BUILDING" );	
+				}
+			}else {
+				logger.error("Error! Dicom size is not equal to '0' ");
+				return new QueryResult( "ERROR_CABINET_BUILDING" );		
 			}
-			return new QueryResult(SUCCESS_EXPLORATION_SAVE);
-	}
-	 
-	 
-/*	 @RequestMapping(value = { "/saveExplorationViaNetwork" } ,method = {RequestMethod.POST})
-	 public @ResponseBody QueryResult saveExplorationViaNetwork(@RequestBody ExplorationNew dao ){
-		 explorationUniqueName = new ExplorationUniqueName();;
-		 String dstFoldername = explorationUniqueName.getUniqueName();
-		 String serPath = appConfig.getSerializedPath() + "/" + dstFoldername;
-		 Long userId = Long.parseLong(dao.getUserid());
-		 try {
-			String dicomPath =  copyFilesToLocalDir(dao.getUsername(), dao.getPassword(), dao.getPath(), explorationUniqueName);
-			Dcm2Img dcm2Img = new Dcm2Img();
-			Users user = usersRepository.findById(userId);
-			Exploration exploration = addExploration(explorationUniqueName,user,dao.getName());
-			try {
-				dcm2Img.initImageWriter("JPEG","jpeg", null, null,null);
-				dcm2Img.CCCatch(dicomPath, serPath, exploration, imagesRepository);
-				long size = pack(dicomPath, dicomPath + "/" + dstFoldername + ".zip");
-				explorationRepository.updateDicomSize( size , exploration.getId() );
-			} catch (ErrorDicomParsingException e) {
-				//explorationRepository.delete(exploration);
-				return new QueryResult(ERROR_EXPLORATION_SAVE); 
+		} 
+		@RequestMapping(value = { "/buildCabinet" },method = {RequestMethod.GET})
+		public @ResponseBody QueryResult  buildCabinet( @AuthenticationPrincipal UsersDetails activeUser  ) {
+			Users user = usersRepository.findByEmail( activeUser.getEmail() );
+			if (user == null) return new QueryResult("ERROR_USER_NOT_FOUND");
+			
+			List<Exploration> explorations = explorationRepository.findByUsersId( user.getId());
+			if (explorations != null && explorations.size() > 0) {
+				for(Exploration expl : explorations) {
+					if (expl.getDicomSize() == 0) {
+						try {
+							String remotePath = expl.getRemotepath().trim();
+							String s1 = remotePath.replaceAll("\\\\", "/");
+							Path path = Paths.get( s1 );
+							String ipAddress = path.getName(0).toString();
+							String dirName = path.getName(1).toString().toLowerCase();
+							RemotePaths remotePaths = remotePathsRepository.findByIpaddressAndDirnameIgnoreCase(ipAddress, dirName);
+							if (remotePaths == null) {
+								logger.error("Error! Remoute path is null!");
+								return new QueryResult( "ERROR_CABINET_BUILDING" );
+							}
+							ExplorationNew exp = new ExplorationNew();
+						    exp.setUsername( remotePaths.getLogin() );
+						    exp.setPassword( remotePaths.getPasswd() );
+						    exp.setPath( s1.startsWith("//") ? s1.substring(2) : s1);
+							return buildCabinet2(exp, expl);
+						} catch (Exception e) {
+							 logger.error("Error building Cabinet with message: " + e.getMessage() );
+							 String[] params = { user.getSurname() + "  " + user.getFirstname() + " " + user.getLastname(), user.getEmail()};
+							 String template = messageSource.getMessage("mail.template.newCabinetError", params, locale);
+							 String subject =  messageSource.getMessage("mail.template.subject", null, locale);
+							 try {
+								MailAgent.sendMail(appConfig.getMailFrom(), ADMIN_EMAIL, appConfig.getMaiSmtpHost(),  subject, "", template);
+							} catch (MessagingException e1) {
+								 logger.error("Error sending email to " + ADMIN_EMAIL );
+							}
+							return new QueryResult( "ERROR_CABINET_BUILDING" );
+						}
+					}
+				}
 			}
-		 } catch (FolderNotFoundException e) {
-			 e.printStackTrace();
-			 return new QueryResult(ERROR_EXPLORATION_SAVE);
-			 
-		} catch (IOException e) {
-			e.printStackTrace();
-			return new QueryResult(ERROR_EXPLORATION_SAVE); 
+			return new QueryResult("CABINET_BUILDED");
+			
 		}
-	    return new QueryResult(SUCCESS_EXPLORATION_SAVE);
-	}
-	*/ 
+
 	@RequestMapping(value = { "/getCinclusionFileName" } ,method = {RequestMethod.GET})
 	public @ResponseBody String getCinclusionFileName(@RequestParam(value="id", required = true)  Long id ){
 		try {
@@ -240,6 +256,38 @@ public class DownloadController extends AbstractController{
 	    }
 
 	 }
+		@RequestMapping(value = { "/rebuild" },method = {RequestMethod.GET})
+		public @ResponseBody QueryResult  rebuild( @RequestParam(value="id", required = true)  Long id  ) {
+			Exploration explorations = explorationRepository.findById( id );
+			if (explorations == null) return new QueryResult("ERROR_CABINET_REBUILD");
+			
+			Path path = Paths.get( appConfig.getStoragePath() + "/" + explorations.getDicomname() );
+			Path serPath = Paths.get( appConfig.getSerializedPath() + "/" + explorations.getDicomname() );
+			if (Files.exists(path)) {
+				try {
+					Files.walk(path)
+					  .sorted(Comparator.reverseOrder())
+					  .map(Path::toFile)
+					  .forEach(File::delete);
+					
+				} catch (IOException e) {
+					return new QueryResult("ERROR_CABINET_REBUILD");
+				}
+			}
+			if (Files.exists(serPath)) {
+				try {
+					Files.walk(serPath)
+					  .sorted(Comparator.reverseOrder())
+					  .map(Path::toFile)
+					  .forEach(File::delete);
+					explorationRepository.updateDicomSize(new Long(0), explorations.getId());
+				} catch (IOException e) {
+					return new QueryResult("ERROR_CABINET_REBUILD");
+				}	
+			}
+			return new QueryResult("CABINET_REBUILDED");
+			
+		}
 	@RequestMapping("/uploadExploration")
 	public @ResponseBody QueryResult uploadExploration(@RequestParam("uploadDicom") MultipartFile uploadDicom,  @RequestParam("explorationName") String explorationName,  @RequestParam("userid") Long userid  ) {
 		
@@ -248,11 +296,8 @@ public class DownloadController extends AbstractController{
 			logger.error("Error in configuration. Create directory: " + testStorageDicomPath);
 			return new QueryResult("ERROR_DICOM_SAVE");
 		}
-
 		String UniqueName = new ExplorationUniqueName().getUniqueName();
-		
 		String dstPath = appConfig.getStoragePath() + "/" + UniqueName;
-		
 		File destDir = new File(dstPath);
 		if (!destDir.exists()) {
 			if (!destDir.mkdir()) {

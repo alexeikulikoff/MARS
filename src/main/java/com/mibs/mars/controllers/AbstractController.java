@@ -2,6 +2,8 @@ package com.mibs.mars.controllers;
 
 
 import static com.mibs.mars.utils.MUtils.regDate;
+import static com.mibs.mars.utils.Messages.ERROR_EXPLORATION_SAVE;
+import static com.mibs.mars.utils.Messages.SUCCESS_EXPLORATION_SAVE;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -13,6 +15,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
@@ -26,6 +29,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.mibs.mars.config.AppConfig;
+import com.mibs.mars.dao.ExplorationNew;
 import com.mibs.mars.entity.Conclusion;
 import com.mibs.mars.entity.Exploration;
 import com.mibs.mars.entity.Payments;
@@ -36,6 +40,7 @@ import com.mibs.mars.exception.ErrorCreateProfileException;
 import com.mibs.mars.exception.ErrorDicomParsingException;
 import com.mibs.mars.exception.FolderNotFoundException;
 import com.mibs.mars.exceptions.CabinetBuildException;
+import com.mibs.mars.exceptions.ErrorTransferDICOMException;
 import com.mibs.mars.exceptions.TransferDicomException;
 import com.mibs.mars.net.MailAgent;
 import com.mibs.mars.repository.ConclusionRepository;
@@ -48,6 +53,7 @@ import com.mibs.mars.repository.RemotePathsRepository;
 import com.mibs.mars.repository.UsersRepository;
 import com.mibs.mars.service.ExplorationUniqueName;
 import com.mibs.mars.utils.Dcm2Img;
+import com.mibs.mars.utils.DicomHandler;
 import com.mibs.mars.xml.XMLRequest;
 
 import jcifs.smb.SmbException;
@@ -83,6 +89,18 @@ abstract class AbstractController {
 	@Autowired
 	protected MessageSource messageSource;
 	
+	
+	protected void deleteDir(Path path) {
+		try {
+			Files.walk(path)
+			  .sorted(Comparator.reverseOrder())
+			  .map(Path::toFile)
+			  .forEach(File::delete);
+		} catch (IOException e) {
+			logger.error("Error while deleting directory: " + path.getFileName());
+		}
+	}
+	
 	private String createLocalStorageDir(String dicomName) throws FolderNotFoundException {
 		String result = appConfig.getStoragePath() + "/" + dicomName;
 		File destDir = new File( result );
@@ -91,9 +109,9 @@ abstract class AbstractController {
 		}
 		return result;
 	}
-	protected void buildCabinet(Exploration exploration, String login, String password) throws CabinetBuildException {
+/*	protected void buildCabinet(Exploration exploration, String login, String password) throws CabinetBuildException {
 		try {
-			String localPath = createLocalStorageDir(exploration.getDicomname() );
+			String localPath = createLocalStorageDir( exploration.getDicomname() );
 			try {
 				transferDicom(exploration.getRemotepath(), localPath, login, password);
 				Dcm2Img dcm2Img = new Dcm2Img();
@@ -119,6 +137,57 @@ abstract class AbstractController {
 		
 		
 	}
+	*/
+	protected QueryResult buildCabinet2(ExplorationNew exp,  Exploration saved  ) {
+		
+		 String remoteSmbPath = "smb://"  +exp.getUsername() + ":" + exp.getPassword() + "@" + exp.getPath();
+		 //   String remoteSmbPath = "smb://admin:admin@172.16.30.107/Public/CABTEST/";
+		    int transfered = 0;
+		    int parsed = 0;
+		    try {
+				SmbFile sfile =  new SmbFile( remoteSmbPath );
+				 try {
+					DicomHandler handler = new DicomHandler(saved.getUniqueid(), appConfig.getSerializedPath(), appConfig.getStoragePath());
+					try {
+						transfered = handler.transferDICOMFiles(sfile.listFiles()) ;
+						if (transfered > 0) {
+							parsed = handler.parsingDICOMFiles(saved.getId(), imagesRepository);
+							if (parsed == 0) {
+								 logger.error("Error transfering files. There is nothing to be parsed.");
+								 explorationRepository.delete(saved);
+								 return new QueryResult(ERROR_EXPLORATION_SAVE);	
+							}else {
+								String path = appConfig.getStoragePath() + "/" + saved.getUniqueid();
+								long size = pack( path, path + "/" + saved.getUniqueid() + ".zip");
+								explorationRepository.updateDicomSize( size , saved.getId() );
+							}
+						}else {
+							 logger.error("Error transfering files. There is nothing to be parsed.");
+							 explorationRepository.delete(saved);
+							 return new QueryResult(ERROR_EXPLORATION_SAVE);
+						}
+					} catch (ErrorTransferDICOMException e) {
+						 logger.error("Error Transfering  DICOM " + e.getMessage() );
+						 explorationRepository.delete(saved);
+						 return new QueryResult(ERROR_EXPLORATION_SAVE);
+					}
+					
+				 } catch (SmbException e) {
+					 logger.error("Error SmbException " + e.getMessage() );
+					 explorationRepository.delete(saved);
+					 return new QueryResult(ERROR_EXPLORATION_SAVE);
+					 
+				}
+		    } catch (MalformedURLException e) {
+		    	logger.error("Error Malformed URL Exception " + e.getMessage() );
+		    	explorationRepository.delete(saved);
+				return new QueryResult(ERROR_EXPLORATION_SAVE);
+			}
+			return new QueryResult(SUCCESS_EXPLORATION_SAVE);
+
+	}
+
+/*	
 	private void transferDicom(String remotePath, String localPath, String t_login, String t_password) throws TransferDicomException  {
 		
 		//jcifs.Config.setProperty("jcifs.smb.client.disablePlainTextPasswords","false");
@@ -191,7 +260,7 @@ abstract class AbstractController {
 		logger.info("Stop extracting files from: " + smbDirNameInfo);
 		
 	}
-
+*/
 	protected long pack(String sourceDirPath, String zipFilePath) {
 		logger.info("Start creating ZIP file: "  + zipFilePath);
 		long result = 0;

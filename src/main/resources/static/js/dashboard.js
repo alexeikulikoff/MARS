@@ -7,6 +7,26 @@ var dashboard = dashboard || {};
 var table = null;
 var journalTable = null;
 
+dashboard.action = {
+		"CABINET_BUILDED" : function(){
+		   $("#dashboard_dialog").addClass("hidden");
+			core.showStatus($success.explUpdate,"success");
+			dashboard.showJournalTable();
+		 },
+		"SUCCESS_EXPLORATION_SAVE" : function(){
+		   $("#dashboard_dialog").addClass("hidden");
+			core.showStatus($success.explUpdate,"success");
+			dashboard.showJournalTable();
+		 },
+		"ERROR_CABINET_BUILDING" : function(){
+		   $("#dashboard_dialog").addClass("hidden");
+			core.showStatus($error.explUpdate,"error");
+		 },
+		"ERROR_EXPLORATION_SAVE"  : function(){
+			$("#dashboard_dialog").addClass("hidden");
+			core.showStatus($error.explUpdate,"error");
+	    }
+}
 
 dashboard.init = function(){
 	var headers = {};
@@ -234,26 +254,13 @@ dashboard.rebuild = function( id ){
 		  type: "GET",
 		  url: "rebuild?id=" + id,
 		  contentType : 'application/json',
-		  dataType: "html",
+		  dataType: "json",
 		  success: function(e){
-			  switch(e){
-			  case "CABINET_REBUILDED": 
-				  $("#dashboard_dialog").addClass("hidden");
-				  core.showStatus($success.explUpdate,"success");
-				  dashboard.showJournalTable();
-				  break;
-			  case "ERROR_CABINET_REBUILD":
-				  $("#dashboard_dialog").addClass("hidden");
-				  core.showStatus($error.explUpdate,"error");
-				  break;
-			default:
-				  $("#dashboard_dialog").addClass("hidden");
-				  core.showStatus($error.explUpdate,"error");
-			  }	  
+		        dashboard.action[e.message]();
 		  },
 		  
 		  error: function(e){
-			  console.log(e);
+			
 			  $("#dashboard_dialog").addClass("hidden");
 			  core.showStatus($error.explSaved,"error");
 		  }
@@ -266,26 +273,11 @@ dashboard.loadExploration = function( id ){
 		  type: "GET",
 		  url: "loadExploration?id=" + id,
 		  contentType : 'application/json',
-		  dataType: "html",
+		  dataType: "json",
 		  success: function(e){
-			  switch(e){
-			  case "CABINET_BUILDED": 
-				  $("#dashboard_dialog").addClass("hidden");
-				  core.showStatus($success.explUpdate,"success");
-				  dashboard.showJournalTable();
-				  break;
-			  case "ERROR_CABINET_BUILDING":
-				  $("#dashboard_dialog").addClass("hidden");
-				  core.showStatus($error.explUpdate,"error");
-				  break;
-			default:
-				  $("#dashboard_dialog").addClass("hidden");
-				  core.showStatus($error.explUpdate,"error");
-			  }	  
+            dashboard.action[e.message]();
 		  },
-		  
 		  error: function(e){
-			  console.log(e);
 			  $("#dashboard_dialog").addClass("hidden");
 			  core.showStatus($error.explSaved,"error");
 		  }

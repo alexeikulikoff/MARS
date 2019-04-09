@@ -192,17 +192,7 @@ public class MarsController  extends AbstractController{
 			return "ERROR_PATH_UPDATE";
 		}
 	}
-	private void deleteDir(Path path) {
-		try {
-			Files.walk(path)
-			  .sorted(Comparator.reverseOrder())
-			  .map(Path::toFile)
-			  .forEach(File::delete);
-		} catch (IOException e) {
-		
-			logger.error("Error while deleting directory: " + path.getFileName());
-		}
-	}
+	
 	@RequestMapping(value = { "/dropExploration" },method = {RequestMethod.GET})
 	public @ResponseBody String  dropExploration( @RequestParam(value="id", required = true)  Long id   ) {
 		Exploration exploration = explorationRepository.findById(id);
@@ -223,90 +213,8 @@ public class MarsController  extends AbstractController{
 		if (exploration == null) return "PATH_NOT_FOUND";
 		return exploration.getRemotepath();
 	}
-	@RequestMapping(value = { "/buildCabinet" },method = {RequestMethod.GET})
-	public @ResponseBody String  buildCabinet( @AuthenticationPrincipal UsersDetails activeUser  ) {
-		Users user = usersRepository.findByEmail( activeUser.getEmail() );
-		if (user == null) return "ERROR_USER_NOT_FOUND";
-		
-		List<Exploration> explorations = explorationRepository.findByUsersId( user.getId());
-		if (explorations != null && explorations.size() > 0) {
-			for(Exploration expl : explorations) {
-				if (expl.getDicomSize() == 0) {
-					try {
-						buildCabinet( expl, null, null );
-					} catch (CabinetBuildException e) {
-						 logger.error("Error building Cabinet with message: " + e.getMessage() );
-						
-						 String[] params = { user.getSurname() + "  " + user.getFirstname() + " " + user.getLastname(), user.getEmail()};
-						 String template = messageSource.getMessage("mail.template.newCabinetError", params, locale);
-						 String subject =  messageSource.getMessage("mail.template.subject", null, locale);
-						 try {
-							MailAgent.sendMail(appConfig.getMailFrom(), ADMIN_EMAIL, appConfig.getMaiSmtpHost(),  subject, "", template);
-						} catch (MessagingException e1) {
-							 logger.error("Error sending email to " + ADMIN_EMAIL );
-						}
-						return "ERROR_CABINET_BUILDING";
-					}
-				}
-			}
-		}
-		return "CABINET_BUILDED";
-		
-	}
-	@RequestMapping(value = { "/loadExploration" },method = {RequestMethod.GET})
-	public @ResponseBody String  loadExploration( @RequestParam(value="id", required = true)  Long id  ) {
-	
-		
-		Exploration explorations = explorationRepository.findById( id );
-		
-		if (explorations.getDicomSize() == 0) {
-			try {
-					buildCabinet( explorations, null, null );
-				} catch (CabinetBuildException e) {
-					logger.error("Error: " + e.getMessage());
-					//e.printStackTrace();
-					return "ERROR_CABINET_BUILDING";
-			}
-		}
-		return "CABINET_BUILDED";
-		
-	}
-	@RequestMapping(value = { "/rebuild" },method = {RequestMethod.GET})
-	public @ResponseBody String  rebuild( @RequestParam(value="id", required = true)  Long id  ) {
-	
-		
-		Exploration explorations = explorationRepository.findById( id );
-		
-		if (explorations == null) return "ERROR_CABINET_REBUILD";
-		
-		Path path = Paths.get( appConfig.getStoragePath() + "/" + explorations.getDicomname() );
-		Path serPath = Paths.get( appConfig.getSerializedPath() + "/" + explorations.getDicomname() );
-		if (Files.exists(path)) {
-			try {
-				Files.walk(path)
-				  .sorted(Comparator.reverseOrder())
-				  .map(Path::toFile)
-				  .forEach(File::delete);
-				
-			} catch (IOException e) {
-				return "ERROR_CABINET_REBUILD";
-			}
-		}
-		if (Files.exists(serPath)) {
-			try {
-				Files.walk(serPath)
-				  .sorted(Comparator.reverseOrder())
-				  .map(Path::toFile)
-				  .forEach(File::delete);
-				explorationRepository.updateDicomSize(new Long(0), explorations.getId());
-			} catch (IOException e) {
-				return "ERROR_CABINET_REBUILD";
-			}	
-		}
-		
-		return "CABINET_REBUILDED";
-		
-	}
+
+
 	@RequestMapping(value = { "/showJournalTable" },method = {RequestMethod.GET})
 	public @ResponseBody List<JournalDAO> getJournalTable(@RequestParam(value="d1", required = true)  String d1, @RequestParam(value="d2", required = true)  String d2  ) {
 		

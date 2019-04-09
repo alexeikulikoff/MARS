@@ -1,23 +1,29 @@
 var profile = profile || {};
 
+profile.action = {
+    'CABINET_BUILDED' : function(){
+        core.showStatus($success.explSaved,"success");  
+    },
+    'ERROR_CABINET_BUILDING' : function(){
+          core.showStatus($error.explSaved,"error");
+    },
+    'SUCCESS_EXPLORATION_SAVE' : function(){
+        core.showStatus($success.explSaved,"success");  
+    },
+    'ERROR_EXPLORATION_SAVE' : function(){
+        core.showStatus($error.explSaved,"error");
+    }
+}
 profile.buildCabinet = function(){
-	console.log("build cabinet");
 	$("#create_dialog").removeClass("hidden");
 	$.ajax({
 		  type: "GET",
 		  url: "buildCabinet",
 		  contentType : 'application/json',
-		  dataType: "html",
+		  dataType: "json",
 		  success: function(e){
 			  $("#create_dialog").addClass("hidden");
-			  switch(e){
-			  case "CABINET_BUILDED" : 
-				  core.showStatus($success.explSaved,"success");
-				  break;
-			  case "ERROR_CABINET_BUILDING" :
-				  core.showStatus($error.explSaved,"error");
-			  	  break;
-			  }
+			  profile.action[e.message](); 
 		  },
 		  error: function(e){
 			 $("#create_dialog").addClass("hidden");
