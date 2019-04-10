@@ -147,7 +147,7 @@ abstract class AbstractController {
 		    try {
 				SmbFile sfile =  new SmbFile( remoteSmbPath );
 				 try {
-					DicomHandler handler = new DicomHandler(saved.getUniqueid(), appConfig.getSerializedPath(), appConfig.getStoragePath());
+					DicomHandler handler = new DicomHandler(saved.getDicomname(), appConfig.getSerializedPath(), appConfig.getStoragePath());
 					try {
 						transfered = handler.transferDICOMFiles(sfile.listFiles()) ;
 						if (transfered > 0) {
@@ -157,8 +157,8 @@ abstract class AbstractController {
 								 explorationRepository.delete(saved);
 								 return new QueryResult(ERROR_EXPLORATION_SAVE);	
 							}else {
-								String path = appConfig.getStoragePath() + "/" + saved.getUniqueid();
-								long size = pack( path, path + "/" + saved.getUniqueid() + ".zip");
+								String path = appConfig.getStoragePath() + "/" + saved.getDicomname();
+								long size = pack( path, path + "/" + saved.getDicomname() + ".zip");
 								explorationRepository.updateDicomSize( size , saved.getId() );
 							}
 						}else {
