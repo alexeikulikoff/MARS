@@ -24,7 +24,7 @@ spring:
           platform: postgres
           driverClassName: org.postgresql.Driver
           driver-class-name: org.postgresql.Driver
-          url: jdbc:postgresql://127.0.0.1:5432/springbootdb
+          url: jdbc:postgresql://172.16.255.6:5432/springbootdb
           username: postgres
           password: postgres
     jpa:
@@ -47,7 +47,7 @@ security:
 server:  
     connection-timeout: -1 
     context-path: /mars
-    address: 172.16.30.49        
+    address: 172.16.255.6        
     port: 443
     ssl:
         key-store-type: PKCS12
