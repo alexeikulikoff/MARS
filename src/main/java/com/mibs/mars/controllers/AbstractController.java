@@ -154,33 +154,33 @@ abstract class AbstractController {
 							parsed = handler.parsingDICOMFiles(saved.getId(), imagesRepository);
 							if (parsed == 0) {
 								 logger.error("Error transfering files. There is nothing to be parsed.");
-								 explorationRepository.delete(saved);
+								 //explorationRepository.delete(saved);
 								 return new QueryResult(ERROR_EXPLORATION_SAVE);	
 							}else {
 								String path = appConfig.getStoragePath() + "/" + saved.getDicomname();
 								long size = pack( path, path + "/" + saved.getDicomname() + ".zip");
-								explorationRepository.updateDicomSize( size , saved.getId() );
+								//explorationRepository.updateDicomSize( size , saved.getId() );
 							}
 						}else {
 							 logger.error("Error transfering files. There is nothing to be parsed.");
-							 explorationRepository.delete(saved);
+							 //explorationRepository.delete(saved);
 							 return new QueryResult(ERROR_EXPLORATION_SAVE);
 						}
 					} catch (ErrorTransferDICOMException e) {
 						 logger.error("Error Transfering  DICOM " + e.getMessage() );
-						 explorationRepository.delete(saved);
+						 //explorationRepository.delete(saved);
 						 return new QueryResult(ERROR_EXPLORATION_SAVE);
 					}
 					
 				 } catch (SmbException e) {
 					 logger.error("Error SmbException " + e.getMessage() );
-					 explorationRepository.delete(saved);
+					 //explorationRepository.delete(saved);
 					 return new QueryResult(ERROR_EXPLORATION_SAVE);
 					 
 				}
 		    } catch (MalformedURLException e) {
 		    	logger.error("Error Malformed URL Exception " + e.getMessage() );
-		    	explorationRepository.delete(saved);
+		    	//explorationRepository.delete(saved);
 				return new QueryResult(ERROR_EXPLORATION_SAVE);
 			}
 			return new QueryResult(SUCCESS_EXPLORATION_SAVE);
