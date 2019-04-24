@@ -265,6 +265,14 @@ abstract class AbstractController {
 		logger.info("Start creating ZIP file: "  + zipFilePath);
 		long result = 0;
 		try {
+			try {
+				Files.deleteIfExists(Paths.get(zipFilePath));
+			
+			} catch (IOException e1) {
+
+				logger.error("Error delete If Exists for " + zipFilePath + " with message " + e1.getMessage());
+			}
+			
 			ZipFile zipFile = new ZipFile(zipFilePath);
 			ArrayList<File> fs = new ArrayList<>();
 			ZipParameters parameters = new ZipParameters();
