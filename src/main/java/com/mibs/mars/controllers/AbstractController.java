@@ -159,7 +159,7 @@ abstract class AbstractController {
 							}else {
 								String path = appConfig.getStoragePath() + "/" + saved.getDicomname();
 								long size = pack( path, path + "/" + saved.getDicomname() + ".zip");
-								//explorationRepository.updateDicomSize( size , saved.getId() );
+								explorationRepository.updateDicomSize( size , saved.getId() );
 							}
 						}else {
 							 logger.error("Error transfering files. There is nothing to be parsed.");
