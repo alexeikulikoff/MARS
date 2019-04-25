@@ -25,8 +25,20 @@ dashboard.action = {
 		"ERROR_EXPLORATION_SAVE"  : function(){
 			$("#dashboard_dialog").addClass("hidden");
 			core.showStatus($error.explUpdate,"error");
+        },
+        "ERROR_CABINET_REBUILD"  : function(){
+			$("#dashboard_dialog").addClass("hidden");
+			core.showStatus($error.explUpdate,"error");
+        },
+        "CABINET_REBUILDED"  : function(){
+			$("#dashboard_dialog").addClass("hidden");
+            core.showStatus($success.explUpdate,"success");
+            dashboard.showJournalTable();
 	    }
 }
+
+
+
 
 dashboard.init = function(){
 	var headers = {};
