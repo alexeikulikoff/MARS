@@ -47,7 +47,7 @@ security:
 server:  
     connection-timeout: -1 
     context-path: /mars
-    address: 172.16.255.6   
+    address: 172.16.30.49   
     port: 443
     ssl:
         key-store-type: PKCS12
