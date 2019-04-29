@@ -75,24 +75,19 @@ public class DicomHandler extends AbstractDicomHandler implements Transformable 
 				SmbFile src;
 				try {
 					src = new SmbFile(file.getCanonicalPath());
-					   //InputStream input;
-				
-						//input = src.getInputStream();
-						String dstFileName = (recursion) ?  path + "/DCM-" + counter + "-"  + src.getName() : path + "/" + src.getName();
-						SmbFile dstSmb = new SmbFile(dstFileName);
+					   InputStream input;
 						try {
-							src.copyTo(dstSmb);
-						} catch (SmbException e) {
-							logger.error("Smb Exception copyTo " + src.toString() + " with message: " + e.getMessage());
+							input = src.getInputStream();
+							String dstFileName = (recursion) ?  path + "/DCM-" + counter + "-"  + src.getName() : path + "/" + src.getName();
+							OutputStream output = new FileOutputStream(dstFileName);
+							IOUtils.copy(input, output);
+							logger.info("Copy file " + src.getName()  + " ->  " + dstFileName );
+							if (input != null ) input.close();
+							if (output != null) output.close();
+							counter++;
+						} catch (IOException e) {
+							logger.error("IOException " + file.toString() + " with message: " + e.getMessage());
 						}
-						
-				/*		OutputStream output = new FileOutputStream(dstFileName);
-						IOUtils.copy(input, output);
-						logger.info("Copy file " + src.getName()  + " ->  " + dstFileName );
-						if (input != null ) input.close();
-						if (output != null) output.close();
-*/						
-						counter++;
 					
 				} catch (MalformedURLException e) {
 					logger.error("Malformed URL Exception " + file.toString() + " with message: " + e.getMessage());
@@ -104,15 +99,12 @@ public class DicomHandler extends AbstractDicomHandler implements Transformable 
 	@Override
 	public int transferDICOMFiles(SmbFile[] files) throws ErrorTransferDICOMException {
 		int result = 0;
-		
 		try {
 			result = copyFiles(createLocalDir(dicomPath, dicomName), files, false);
-		} catch (FileNotFoundException e1) {
-			logger.error("File Not Found Exception " + dicomPath  + " ->  " + dicomName );
-		} catch (IOException e1) {
-			logger.error("IO Exception " + dicomPath  + " ->  " + dicomName );
-			return result;
+		} catch (FileNotFoundException e) {
+			logger.error("File Not Found Exception  with message: " + e.getMessage());
 		}
+		
 		
 /*		ExecutorService service = null;
 		try {
