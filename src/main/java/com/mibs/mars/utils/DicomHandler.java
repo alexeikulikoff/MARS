@@ -44,7 +44,7 @@ public class DicomHandler extends AbstractDicomHandler implements Transformable 
 	 public DicomHandler( String dicomName, String serializePath, String dicomPath, String remoteSmbPath ) {
 		 super(dicomName,serializePath,dicomPath,remoteSmbPath);
 	 }
-	private int copyFiles(String path, SmbFile[] files, boolean recursion) throws IOException, InterruptedException {
+	private int copyFiles(String path, SmbFile[] files, boolean recursion) throws IOException {
 		if ((files != null) && (files.length > 0) ) {
 			for (SmbFile file : files) {
 				if (file.isDirectory()) {
@@ -71,7 +71,17 @@ public class DicomHandler extends AbstractDicomHandler implements Transformable 
 	@Override
 	public int transferDICOMFiles(SmbFile[] files) throws ErrorTransferDICOMException {
 		int result = 0;
-		ExecutorService service = null;
+		
+		try {
+			result = copyFiles(createLocalDir(dicomPath, dicomName), files, false);
+		} catch (FileNotFoundException e1) {
+			logger.error("File Not Found Exception " + dicomPath  + " ->  " + dicomName );
+		} catch (IOException e1) {
+			logger.error("IO Exception " + dicomPath  + " ->  " + dicomName );
+		
+		}
+		
+/*		ExecutorService service = null;
 		try {
 			service = Executors.newSingleThreadExecutor();
 			Future<Integer> future = service.submit(() -> copyFiles(createLocalDir(dicomPath, dicomName), files, false));
@@ -84,6 +94,7 @@ public class DicomHandler extends AbstractDicomHandler implements Transformable 
 			if (service != null)
 				service.shutdown();
 		}
+*/		
 		return result;
 	}
 
