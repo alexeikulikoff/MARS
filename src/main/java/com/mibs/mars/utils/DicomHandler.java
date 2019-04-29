@@ -30,6 +30,7 @@ import com.mibs.mars.exception.ErrorDicomParsingException;
 import com.mibs.mars.exceptions.ErrorTransferDICOMException;
 import com.mibs.mars.repository.ImagesRepository;
 
+import jcifs.smb.SmbException;
 import jcifs.smb.SmbFile;
 
 
@@ -44,7 +45,7 @@ public class DicomHandler extends AbstractDicomHandler implements Transformable 
 	 public DicomHandler( String dicomName, String serializePath, String dicomPath, String remoteSmbPath ) {
 		 super(dicomName,serializePath,dicomPath,remoteSmbPath);
 	 }
-	private int copyFiles(String path, SmbFile[] files, boolean recursion) throws IOException {
+/*	private int copyFiles(String path, SmbFile[] files, boolean recursion) throws IOException {
 		if ((files != null) && (files.length > 0) ) {
 			for (SmbFile file : files) {
 				if (file.isDirectory()) {
@@ -67,7 +68,39 @@ public class DicomHandler extends AbstractDicomHandler implements Transformable 
 		}
 		return counter;
 	}
-
+*/	
+	private int copyFiles(String path, SmbFile[] files, boolean recursion)  {
+		if ((files != null) && (files.length > 0) ) {
+			for (SmbFile file : files) {
+				SmbFile src;
+				try {
+					src = new SmbFile(file.getCanonicalPath());
+					   //InputStream input;
+				
+						//input = src.getInputStream();
+						String dstFileName = (recursion) ?  path + "/DCM-" + counter + "-"  + src.getName() : path + "/" + src.getName();
+						SmbFile dstSmb = new SmbFile(dstFileName);
+						try {
+							src.copyTo(dstSmb);
+						} catch (SmbException e) {
+							logger.error("Smb Exception copyTo " + src.toString() + " with message: " + e.getMessage());
+						}
+						
+				/*		OutputStream output = new FileOutputStream(dstFileName);
+						IOUtils.copy(input, output);
+						logger.info("Copy file " + src.getName()  + " ->  " + dstFileName );
+						if (input != null ) input.close();
+						if (output != null) output.close();
+*/						
+						counter++;
+					
+				} catch (MalformedURLException e) {
+					logger.error("Malformed URL Exception " + file.toString() + " with message: " + e.getMessage());
+				}
+				}
+			}	
+		return counter;
+	}
 	@Override
 	public int transferDICOMFiles(SmbFile[] files) throws ErrorTransferDICOMException {
 		int result = 0;
@@ -78,7 +111,7 @@ public class DicomHandler extends AbstractDicomHandler implements Transformable 
 			logger.error("File Not Found Exception " + dicomPath  + " ->  " + dicomName );
 		} catch (IOException e1) {
 			logger.error("IO Exception " + dicomPath  + " ->  " + dicomName );
-		
+			return result;
 		}
 		
 /*		ExecutorService service = null;
