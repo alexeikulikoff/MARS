@@ -75,7 +75,8 @@ public class DicomHandler extends AbstractDicomHandler implements Transformable 
 		try {
 			service = Executors.newSingleThreadExecutor();
 			Future<Integer> future = service.submit(() -> copyFiles(createLocalDir(dicomPath, dicomName), files, false));
-			result = future.get(timeout, TimeUnit.MINUTES);
+			//result = future.get(timeout, TimeUnit.MINUTES);
+			result = future.get();
 		} catch (Exception e) {
 			throw new ErrorTransferDICOMException("Error while transfering dicom files from remote!");
 
